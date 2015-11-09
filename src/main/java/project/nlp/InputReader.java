@@ -17,11 +17,11 @@ public class InputReader
 	private static String url = "https://api.stackexchange.com/2.2/search?page=8&pagesize=100&order=desc&sort=activity&tagged=java&nottagged=android&site=stackoverflow";
 private static String answers ="https://api.stackexchange.com/2.2/answers/33452399/?order=desc&sort=activity&site=stackoverflow&filter=withbody";
 	  
-public void readJson(String fileName) throws Exception
+public void readJson() throws Exception
 {
 	ObjectMapper mapper = new ObjectMapper();
 
-	File unigramsFile = new File( fileName );
+	File unigramsFile = new File( this.getClass().getResource("/resources/questions.json").getFile());
 	Items items = mapper.readValue(unigramsFile, Items.class); 
 	for (QuestionDetails question : items.getItems()) {
 		System.out.println(question.getQuestionId());
@@ -37,6 +37,6 @@ public static void main(String[] args) throws Exception{
 	    // Create an instance of HttpClient.
 	 
 			InputReader ir = new InputReader();
-			ir.readJson("S:\\NLP\\Source_Code\\expertfinder\\src\\main\\java\\resources\\questions.json");
+			ir.readJson();
 	  }
 }
