@@ -11,9 +11,6 @@
 			<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<!-- <excludes>
-					<exclude>**/dict_3.0/*.*</exclude>
-				</excludes> -->
 			</resource>
 		</resources>
 				<plugins>
@@ -22,7 +19,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>kw.nlp.SimplifiedLesk</mainClass>
+							<mainClass>project.nlp.InputReader</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
@@ -48,6 +45,12 @@
 		</repository>
 	</repositories>
 	<dependencies>
+	
+		<dependency>
+			<groupId>stanford</groupId>
+			<artifactId>stanford-postagger</artifactId>
+			<version>3.3.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -101,6 +104,5 @@
 			<version>3.4.2</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 </project>
