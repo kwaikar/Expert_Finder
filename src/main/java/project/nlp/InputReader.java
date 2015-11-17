@@ -21,7 +21,7 @@ public void readJson() throws Exception
 {
 	ObjectMapper mapper = new ObjectMapper();
 
-	File unigramsFile = new File( this.getClass().getResource("/resources/questions.json").getFile());
+	File unigramsFile = new File( this.getClass().getResource("/resources/questions_subset.json").getFile());
 	Items items = mapper.readValue(unigramsFile, Items.class); 
 	for (QuestionDetails question : items.getItems()) {
 		System.out.println(question.getQuestionId());
