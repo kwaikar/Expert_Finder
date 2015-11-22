@@ -30,6 +30,11 @@ public class InputReader {
 	private static String url = "https://api.stackexchange.com/2.2/search?page=8&pagesize=100&order=desc&sort=activity&tagged=java&nottagged=android&site=stackoverflow";
 	private static String answers = "https://api.stackexchange.com/2.2/answers/33452399/?order=desc&sort=activity&site=stackoverflow&filter=withbody";
 
+	private static TaggerUtil tagger =null;
+	static
+	{
+		 tagger=new TaggerUtil();
+	}
 	public void readJson() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		File unigramsFile = new File(this.getClass().getResource("/resources/questions_subset.json").getFile());
@@ -70,7 +75,6 @@ public class InputReader {
 	 */
 	private List<OntologyNode> extractOntology(Set<String> sentences) {
 		List<OntologyNode> ontoList;
-		TaggerUtil tagger = new TaggerUtil();
 		Map<String, OntologyNode> ontologyMap = new HashMap<String, OntologyNode>();
 
 		for (String sentence : sentences) {
