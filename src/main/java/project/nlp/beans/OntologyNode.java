@@ -71,7 +71,7 @@ public class OntologyNode {
 	 */
 	@Override
 	public String toString() {
-		return "OntologyNode [entity=" + entity + ", frequency=" + frequency + ", weight=" + weight + "]";
+		return  entity + "[" + frequency + "]";
 	}
 
 	@Override

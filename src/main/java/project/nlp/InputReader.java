@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,28 +38,33 @@ public class InputReader {
 		Map<String, QuestionDetails> questions = new LinkedHashMap<String, QuestionDetails>();
 		Map<String, Answer> answers = new LinkedHashMap<String, Answer>();
 		Map<String, Owner> owners = new LinkedHashMap<String, Owner>();
-		Set<String> sentences = new HashSet<String>();
+		List<OntologyNode> completeOntoList = new ArrayList<OntologyNode>();
+
 		for (QuestionDetails question : items.getItems()) {
-		//	questions.put(question.getQuestionId(), question);
-			//sentences.add(cleanedString(question.getTitle()));
+			Set<String> sentences = new HashSet<String>();
+
+			// questions.put(question.getQuestionId(), question);
+			// sentences.add(cleanedString(question.getTitle()));
 			sentences.add(cleanedString(question.getBody()));
 			System.out.println(question.getQuestionId());
-			//owners.put(question.getOwner().getUserId(), question.getOwner());
+			// owners.put(question.getOwner().getUserId(), question.getOwner());
 			for (Answer answer : question.getAnswers()) {
-//				answers.put(answer.getAnswer_id(), answer);
+				// answers.put(answer.getAnswer_id(), answer);
 				sentences.add(cleanedString(answer.getBody()));
 				sentences.add(cleanedString(answer.getTitle()));
-
-				System.out.println(answer.getAnswer_id());
 			}
+			List<OntologyNode> ontoList = extractOntology(sentences);
+			//System.out.println(ontoList);
+			/*System.out.println(answer.getAnswer_id());*/
+			completeOntoList.addAll(ontoList);
 		}
-		List<OntologyNode> ontoList=null;
-		ontoList = extractOntology(sentences);
-		System.out.println(ontoList);
+		reducer(completeOntoList);
+		System.out.println(completeOntoList);
 	}
 
 	/**
 	 * This method extracts ontology from given sentences
+	 * 
 	 * @param sentences
 	 * @return
 	 */
@@ -69,21 +75,22 @@ public class InputReader {
 
 		for (String sentence : sentences) {
 			List<String> entries = tagger.extractNounEntities(sentence);
-			sentence=null;
-			
+			sentence = null;
+
 			for (String node : entries) {
-				OntologyNode nodeFromMap = ontologyMap.get(node.toLowerCase().trim());
+				if(StringUtils.isNotBlank(node)){
+					String replacedString=node.replaceAll("[-+.^:,()]","").trim();
+				OntologyNode nodeFromMap = ontologyMap.get(replacedString);
 				if (nodeFromMap != null) {
 					nodeFromMap.addFrequency();
+				} else {
+					ontologyMap.put(replacedString, new OntologyNode(replacedString));
 				}
-				else
-				{
-					ontologyMap.put(node, new OntologyNode(node.toLowerCase().trim()));
 				}
 			}
-			entries=null;
+			entries = null;
 		}
-		ontoList= new ArrayList<OntologyNode>(ontologyMap.values());
+		ontoList = new ArrayList<OntologyNode>(ontologyMap.values());
 		Collections.sort(ontoList, new Comparator<OntologyNode>() {
 			public int compare(OntologyNode o1, OntologyNode o2) {
 				// TODO Auto-generated method stub
@@ -93,17 +100,35 @@ public class InputReader {
 		return ontoList;
 	}
 
+	/**
+	 * @param ontoList
+	 */
+	private void reducer(List<OntologyNode> ontoList) {
+		Collections.sort(ontoList, new Comparator<OntologyNode>() {
+			public int compare(OntologyNode o1, OntologyNode o2) {
+				// TODO Auto-generated method stub
+				return o2.getFrequency().compareTo(o1.getFrequency());
+			}
+		});
+	}
+
 	private String cleanedString(String str) {
-		return str.replaceAll("(?s)<code>.*?</code>", "").replaceAll("(?s)<pre>.*?</pre>", "").replaceAll("<strong>", "").replaceAll("</strong>", "").replaceAll("</br>", "").replaceAll("<em>", "").replaceAll("</em>", "").replaceAll("\n", " ").replaceAll("  ", " ").replaceAll("<p>", "").replaceAll("</p>", "").replaceAll("&amp;", "&").replaceAll("(?s)<a.*>.*?</a>", "").replaceAll("&#39;", "'")/**/;
+		return str.replaceAll("(?s)<code>.*?</code>", "").replaceAll("(?s)<pre>.*?</pre>", "")
+				.replaceAll("<strong>", "").replaceAll("</strong>", "").replaceAll("</br>", "").replaceAll("<em>", "")
+				.replaceAll("</em>", "").replaceAll("\n", " ").replaceAll("  ", " ").replaceAll("<p>", "")
+				.replaceAll("</p>", "").replaceAll("&amp;", "&").replaceAll("(?s)<a.*>.*?</a>", "")
+				.replaceAll("&#39;", "'")/**/;
 	}
 
 	public static void main(String[] args) throws Exception {
 		// Create an instance of HttpClient.
 
 		InputReader ir = new InputReader();
-/*		String str = "<p>For this code, numbers are printed from 1-10 for Thread <code>t1</code> and after that for thread <code>t2</code>.</p>\n\n<pre><code>class Synchtest {\n    public static void main(String args[]) {\n        synchtest2 a = new synchtest2();\n        Thread t1 = new Thread(a);\n        Thread t2 = new Thread(a);\n        t1.start();\n        t2.start();\n    }\n}\n\nclass synchtest2 extends Thread {\n\n    public synchronized void run() {\n        for (int i = 0; i &lt;= 10; i++) {\n            System.out.println(i);\n            try {\n                sleep(1000);\n            } catch (Exception e) {\n            }\n        }\n    }\n}\n</code></pre>\n\n<p>but for the below code they printed as 00 11 22 33 44 55 and so on. </p>\n\n<pre><code>class Synchtest {\n    public static void main(String args[]) {\n\n        synchtest2 t = new synchtest2();\n        synchtest2 t2 = new synchtest2();\n        t.start();\n        t2.start();\n    }\n}\n\nclass synchtest2 extends Thread {\n\n    public synchronized void run() {\n        for (int i = 0; i &lt;= 10; i++) {\n            System.out.println(i);\n            try {\n                sleep(1000);\n            } catch (Exception e) {\n\n            }\n\n        }\n    }\n}\n</code></pre>\n";
-System.out.println(ir.cleanedString(str));
-*/
+		/*
+		 * String str =
+		 * "<p>For this code, numbers are printed from 1-10 for Thread <code>t1</code> and after that for thread <code>t2</code>.</p>\n\n<pre><code>class Synchtest {\n    public static void main(String args[]) {\n        synchtest2 a = new synchtest2();\n        Thread t1 = new Thread(a);\n        Thread t2 = new Thread(a);\n        t1.start();\n        t2.start();\n    }\n}\n\nclass synchtest2 extends Thread {\n\n    public synchronized void run() {\n        for (int i = 0; i &lt;= 10; i++) {\n            System.out.println(i);\n            try {\n                sleep(1000);\n            } catch (Exception e) {\n            }\n        }\n    }\n}\n</code></pre>\n\n<p>but for the below code they printed as 00 11 22 33 44 55 and so on. </p>\n\n<pre><code>class Synchtest {\n    public static void main(String args[]) {\n\n        synchtest2 t = new synchtest2();\n        synchtest2 t2 = new synchtest2();\n        t.start();\n        t2.start();\n    }\n}\n\nclass synchtest2 extends Thread {\n\n    public synchronized void run() {\n        for (int i = 0; i &lt;= 10; i++) {\n            System.out.println(i);\n            try {\n                sleep(1000);\n            } catch (Exception e) {\n\n            }\n\n        }\n    }\n}\n</code></pre>\n"
+		 * ; System.out.println(ir.cleanedString(str));
+		 */
 		ir.readJson();
 	}
 }

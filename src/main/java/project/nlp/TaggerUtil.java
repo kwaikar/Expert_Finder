@@ -1,11 +1,13 @@
 package project.nlp;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.unitils.reflectionassert.ReflectionAssert;
-import org.unitils.reflectionassert.ReflectionComparatorMode;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.Sentence;
@@ -22,7 +24,7 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 public class TaggerUtil {
 
 	MaxentTagger tagger = null;
-
+Set<String> stopWords = null;
 	/**
 	 * Load the Trained model in the memory.
 	 */
@@ -31,6 +33,15 @@ public class TaggerUtil {
 		try {
 			tagger = new MaxentTagger(this.getClass()
 					.getResource("/resources/POS_Tagged_Model/english-bidirectional-distsim.tagger").getFile());
+			
+			stopWords =new HashSet<String>();
+			String stopWordString = FileUtils.readFileToString(new File(this.getClass().getResource("/resources/stopWords.txt").getFile()));
+			for (String word : stopWordString.split("[\r|\n]")) {
+				if(word.trim().length()>1)
+				{
+					stopWords.add(word.trim().toLowerCase());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -58,10 +69,17 @@ public class TaggerUtil {
 						if (previousNoun != null) {
 							entities.remove(previousNoun);
 							previousNoun = previousNoun + " " + tw.word();
-							entities.add(previousNoun);
+							if(!stopWords.contains(previousNoun.toLowerCase().replaceAll("[:,//?]","")))
+							{
+								entities.add(previousNoun);	
+							}
+							
 						} else {
+							if(!stopWords.contains(tw.word().toLowerCase()))
+							{
 							entities.add(tw.word());
-							System.out.println(tw.word() + " : " + tw.tag());
+							}
+							//System.out.println(tw.word() + " : " + tw.tag());
 							previousNoun = tw.word();
 						}
 					} else {
@@ -69,8 +87,7 @@ public class TaggerUtil {
 					}
 				}
 			}
-		}
-		System.out.println(entities);
+		} 
 		return entities;
 	}
  
