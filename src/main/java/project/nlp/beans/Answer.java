@@ -7,7 +7,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Answer {
 
  
-	 
+	Owner owner = null;
+	/**
+	 * @return the owner
+	 */
+	public Owner getOwner() {
+		return owner;
+	}
+	/**
+	 * @param owner the owner to set
+	 */
+	public void setOwner(Owner owner) {
+		this.owner = owner;
+	}
 	@JsonProperty(value = "down_vote_count")
 	private int downVotes  ; 
 	@JsonProperty(value = "up_vote_count")

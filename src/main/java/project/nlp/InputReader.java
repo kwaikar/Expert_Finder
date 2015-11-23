@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import project.nlp.beans.Answer;
+import project.nlp.beans.ExpertUser;
 import project.nlp.beans.Items;
 import project.nlp.beans.OntologyNode;
 import project.nlp.beans.Owner;
@@ -43,6 +44,7 @@ public class InputReader {
 		Map<String, QuestionDetails> questions = new LinkedHashMap<String, QuestionDetails>();
 		Map<String, Answer> answers = new LinkedHashMap<String, Answer>();
 		Map<String, Owner> owners = new LinkedHashMap<String, Owner>();
+		Map<String,ExpertUser> expertUser = new HashMap<String,ExpertUser>();
 		List<OntologyNode> completeOntoList = new ArrayList<OntologyNode>();
 
 		for (QuestionDetails question : items.getItems()) {
@@ -57,11 +59,18 @@ public class InputReader {
 				// answers.put(answer.getAnswer_id(), answer);
 				sentences.add(cleanedString(answer.getBody()));
 				sentences.add(cleanedString(answer.getTitle()));
+				ExpertUser expertUsr = expertUser.get(answer.getOwner().getUserId());
+				if (expertUsr == null){
+					expertUsr = new ExpertUser();
+					expertUsr.setOwner(answer.getOwner());
+					expertUser.put(answer.getOwner().getUserId(),expertUsr );
+				}
+				List<OntologyNode> ontoList = extractOntology(sentences);
+
 			}
-			List<OntologyNode> ontoList = extractOntology(sentences);
 			//System.out.println(ontoList);
 			/*System.out.println(answer.getAnswer_id());*/
-			completeOntoList.addAll(ontoList);
+		//	completeOntoList.addAll(ontoList);
 		}
 		reducer(completeOntoList);
 		System.out.println(completeOntoList);

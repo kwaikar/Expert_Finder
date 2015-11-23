@@ -20,6 +20,8 @@ public class QuestionDetails {
 	private String title;
 	private String link;
 	private Integer score;
+	@JsonProperty(value = "user_id")
+	private String userId;
 	@JsonProperty(value = "answer_count")
 	private Integer answerCount;
 	@JsonProperty(value = "up_vote_count")
@@ -224,5 +226,14 @@ public class QuestionDetails {
 	public void setBody(String body) {
 		this.body = body;
 	}
+	
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
 
 }
