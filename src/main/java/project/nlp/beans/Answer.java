@@ -25,6 +25,33 @@ public class Answer {
 	@JsonProperty(value = "up_vote_count")
 	private int upVotes  ; 
 	private boolean is_accepted  ;
+	private String[] tags = null;
+	private int score;
+	/**
+	 * @return the score
+	 */
+	public int getScore() {
+		return score;
+	}
+	/**
+	 * @param score the score to set
+	 */
+	public void setScore(int score) {
+		this.score = score;
+	}
+	
+	/**
+	 * @return the tags
+	 */
+	public String[] getTags() {
+		return tags;
+	}
+	/**
+	 * @param tags the tags to set
+	 */
+	public void setTags(String[] tags) {
+		this.tags = tags;
+	}
 	private String answer_id;
 	private String body;
 	private String title;

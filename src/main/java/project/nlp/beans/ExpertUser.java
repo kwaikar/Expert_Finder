@@ -47,6 +47,14 @@ public class ExpertUser {
 	public void setAnswerUserList(List<AnswerUserList> answerUserList) {
 		this.answerUserList = answerUserList;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ExpertUser [owner=" + owner + ", userExpertise=" + userExpertise + ", answerUserList=" + answerUserList
+				+ "]";
+	}
 	
 
 }

@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import project.nlp.beans.Answer;
+import project.nlp.beans.AnswerUserList;
 import project.nlp.beans.ExpertUser;
 import project.nlp.beans.Items;
 import project.nlp.beans.OntologyNode;
@@ -31,11 +32,12 @@ public class InputReader {
 	private static String url = "https://api.stackexchange.com/2.2/search?page=8&pagesize=100&order=desc&sort=activity&tagged=java&nottagged=android&site=stackoverflow";
 	private static String answers = "https://api.stackexchange.com/2.2/answers/33452399/?order=desc&sort=activity&site=stackoverflow&filter=withbody";
 
-	private static TaggerUtil tagger =null;
-	static
-	{
-		 tagger=new TaggerUtil();
+	private static TaggerUtil tagger = null;
+
+	static {
+		tagger = new TaggerUtil();
 	}
+
 	public void readJson() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		File unigramsFile = new File(this.getClass().getResource("/resources/questions_subset.json").getFile());
@@ -44,33 +46,46 @@ public class InputReader {
 		Map<String, QuestionDetails> questions = new LinkedHashMap<String, QuestionDetails>();
 		Map<String, Answer> answers = new LinkedHashMap<String, Answer>();
 		Map<String, Owner> owners = new LinkedHashMap<String, Owner>();
-		Map<String,ExpertUser> expertUser = new HashMap<String,ExpertUser>();
+		Map<String, ExpertUser> expertUser = new HashMap<String, ExpertUser>();
 		List<OntologyNode> completeOntoList = new ArrayList<OntologyNode>();
 
 		for (QuestionDetails question : items.getItems()) {
-			Set<String> sentences = new HashSet<String>();
 
 			// questions.put(question.getQuestionId(), question);
 			// sentences.add(cleanedString(question.getTitle()));
-			sentences.add(cleanedString(question.getBody()));
 			System.out.println(question.getQuestionId());
 			// owners.put(question.getOwner().getUserId(), question.getOwner());
 			for (Answer answer : question.getAnswers()) {
-				// answers.put(answer.getAnswer_id(), answer);
-				sentences.add(cleanedString(answer.getBody()));
-				sentences.add(cleanedString(answer.getTitle()));
-				ExpertUser expertUsr = expertUser.get(answer.getOwner().getUserId());
-				if (expertUsr == null){
-					expertUsr = new ExpertUser();
-					expertUsr.setOwner(answer.getOwner());
-					expertUser.put(answer.getOwner().getUserId(),expertUsr );
+
+				if (!(answer.getDownVotes() == 0 && answer.getUpVotes() == 0)) {
+					Set<String> sentences = new HashSet<String>();
+					sentences.add(cleanedString(question.getBody()));
+					sentences.add(cleanedString(question.getTitle()));
+
+					sentences.add(cleanedString(answer.getBody()));
+					sentences.add(cleanedString(answer.getTitle()));
+
+					List<OntologyNode> ontoList = extractOntology(sentences);
+
+					ExpertUser expertUsr = expertUser.get(answer.getOwner().getUserId());
+					if (expertUsr == null) {
+						expertUsr = new ExpertUser();
+						expertUsr.setOwner(answer.getOwner());
+						expertUser.put(answer.getOwner().getUserId(), expertUsr);
+						List<AnswerUserList> answerUserList = (expertUsr.getAnswerUserList());
+						if (answerUserList == null || answerUserList.size() == 0) {
+							answerUserList = new ArrayList<AnswerUserList>();
+						}
+						answerUserList.add(new AnswerUserList(answer, ontoList));
+						expertUsr.setAnswerUserList(answerUserList);
+
+						System.out.println(expertUsr);
+					}
+
 				}
-				List<OntologyNode> ontoList = extractOntology(sentences);
 
 			}
-			//System.out.println(ontoList);
-			/*System.out.println(answer.getAnswer_id());*/
-		//	completeOntoList.addAll(ontoList);
+			System.out.println(expertUser);
 		}
 		reducer(completeOntoList);
 		System.out.println(completeOntoList);
@@ -91,14 +106,14 @@ public class InputReader {
 			sentence = null;
 
 			for (String node : entries) {
-				if(StringUtils.isNotBlank(node)){
-					String replacedString=node.replaceAll("[-+.^:,()]","").trim();
-				OntologyNode nodeFromMap = ontologyMap.get(replacedString);
-				if (nodeFromMap != null) {
-					nodeFromMap.addFrequency();
-				} else {
-					ontologyMap.put(replacedString, new OntologyNode(replacedString));
-				}
+				if (StringUtils.isNotBlank(node)) {
+					String replacedString = node.replaceAll("[-+.^:,()]", "").trim();
+					OntologyNode nodeFromMap = ontologyMap.get(replacedString);
+					if (nodeFromMap != null) {
+						nodeFromMap.addFrequency();
+					} else {
+						ontologyMap.put(replacedString, new OntologyNode(replacedString));
+					}
 				}
 			}
 			entries = null;
