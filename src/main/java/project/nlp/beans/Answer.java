@@ -29,8 +29,8 @@ public class Answer {
 	private boolean is_accepted  ;
 	private String[] tags = null;
 	private int score;
-	private int threadUpvoteCount=0;
-	private int threadmaxDownvoteCount=0;
+	private int threadUpvoteCount=1;
+	private int threadmaxDownvoteCount=1;
 
 	/**
 	 * @return the threadmaxDownvoteCount

@@ -13,7 +13,7 @@ public class AnswerUserList {
 	int noOfDownvotes;
 	String[] tags = null;
 	int score; 
-	int threadUpvotesMaxCount;
+	int threadUpvotesMaxCount=1;
 	List<OntologyNode> ontologyNode = new ArrayList<OntologyNode>();
 	
 	public AnswerUserList(Answer answer,List<OntologyNode> ontologyNode){
@@ -26,7 +26,7 @@ public class AnswerUserList {
 		this.threadUpvotesMaxCount = answer.getThreadUpvoteCount();
 		this.threadmaxDownvoteCount = answer.getThreadmaxDownvoteCount();
 	}
-	private int threadmaxDownvoteCount=0;
+	private int threadmaxDownvoteCount=1;
 
 	/**
 	 * @return the threadmaxDownvoteCount
@@ -55,7 +55,6 @@ public class AnswerUserList {
 		this.ontologyNode = ontologyNode;
 	}
 		
-	List<OntologyNode> ontology = new ArrayList<OntologyNode>();
 	public boolean isBestAnswer() {
 		return bestAnswer;
 	}
@@ -86,12 +85,6 @@ public class AnswerUserList {
 	public void setScore(int score) {
 		this.score = score;
 	}
-	public List<OntologyNode> getOntology() {
-		return ontology;
-	}
-	public void setOntology(List<OntologyNode> ontology) {
-		this.ontology = ontology;
-	}
 	/**
 	 * @return the threadUpvotesMaxCount
 	 */
@@ -111,7 +104,7 @@ public class AnswerUserList {
 	public String toString() {
 		return "AnswerUserList [bestAnswer=" + bestAnswer + ", noOfUpvotes=" + noOfUpvotes + ", noOfDownvotes="
 				+ noOfDownvotes + ", tags=" + Arrays.toString(tags) + ", score=" + score + ", threadUpvotesMaxCount="
-				+ threadUpvotesMaxCount + ", ontologyNode=" + ontologyNode + ", ontology=" + ontology + "]";
+				+ threadUpvotesMaxCount + ", ontologyNode=" + ontologyNode  + "]";
 	}
  
 

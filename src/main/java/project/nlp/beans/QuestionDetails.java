@@ -33,8 +33,8 @@ public class QuestionDetails {
 	@JsonProperty(value = "is_answered")
 	private Boolean isAnswered;
 	
-	private int threadmaxUpvoteCount=0;
-	private int threadmaxDownvoteCount=0;
+	private int threadmaxUpvoteCount=1;
+	private int threadmaxDownvoteCount=1;
 
 	/**
 	 * @return the threadmaxDownvoteCount

@@ -13,6 +13,13 @@ public class OntologyNode {
 	{
 		frequency=frequency+1;
 	}
+	/**
+	 * Increment Frequency
+	 */
+	public void addFrequency(int frequency)
+	{
+		this.frequency=this.frequency+frequency;
+	}
 
 	public OntologyNode(String entity) {
 		this.entity = entity;
