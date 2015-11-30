@@ -52,7 +52,7 @@ public class ExpertUser {
 	 */
 	@Override
 	public String toString() {
-		return "ExpertUser [owner=" + owner + ", userExpertise=" + userExpertise + ", answerUserList=" + answerUserList
+		return "ExpertUser [owner=" + owner +(userExpertise!=null? ", userExpertise=":"") + userExpertise +  ((answerUserList!=null)?", answerUserList=" + answerUserList:"")
 				+ "]";
 	}
 	

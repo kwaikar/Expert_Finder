@@ -23,6 +23,7 @@ import project.nlp.beans.Items;
 import project.nlp.beans.OntologyNode;
 import project.nlp.beans.Owner;
 import project.nlp.beans.QuestionDetails;
+import project.nlp.beans.UserExpertise;
 
 /**
  * Hello world!
@@ -40,13 +41,13 @@ public class InputReader {
 
 	public void readJson() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		File unigramsFile = new File(this.getClass().getResource("/resources/questions_subset.json").getFile());
+		File unigramsFile = new File(this.getClass().getResource("/resources/questions_smaller_subset.json").getFile());
 		Items items = mapper.readValue(unigramsFile, Items.class);
 
 		Map<String, QuestionDetails> questions = new LinkedHashMap<String, QuestionDetails>();
 		Map<String, Answer> answers = new LinkedHashMap<String, Answer>();
 		Map<String, Owner> owners = new LinkedHashMap<String, Owner>();
-		Map<String, ExpertUser> expertUser = new HashMap<String, ExpertUser>();
+		Map<String, ExpertUser> expertUsers = new HashMap<String, ExpertUser>();
 		List<OntologyNode> completeOntoList = new ArrayList<OntologyNode>();
 
 		for (QuestionDetails question : items.getItems()) {
@@ -55,40 +56,63 @@ public class InputReader {
 			// sentences.add(cleanedString(question.getTitle()));
 			System.out.println(question.getQuestionId());
 			// owners.put(question.getOwner().getUserId(), question.getOwner());
+			Set<String> questionSentence = new HashSet<String>();
+			questionSentence.add(cleanedString(question.getBody()));
+			questionSentence.add(cleanedString(question.getTitle()));
+			List<OntologyNode> questionOntology = extractOntology(questionSentence);
 			for (Answer answer : question.getAnswers()) {
 
 				if (!(answer.getDownVotes() == 0 && answer.getUpVotes() == 0)) {
 					Set<String> sentences = new HashSet<String>();
-					sentences.add(cleanedString(question.getBody()));
-					sentences.add(cleanedString(question.getTitle()));
 
 					sentences.add(cleanedString(answer.getBody()));
 					sentences.add(cleanedString(answer.getTitle()));
 
 					List<OntologyNode> ontoList = extractOntology(sentences);
-
-					ExpertUser expertUsr = expertUser.get(answer.getOwner().getUserId());
+					ontoList.addAll(questionOntology);
+					reducer(completeOntoList);
+					ExpertUser expertUsr = expertUsers.get(answer.getOwner().getUserId());
 					if (expertUsr == null) {
 						expertUsr = new ExpertUser();
 						expertUsr.setOwner(answer.getOwner());
-						expertUser.put(answer.getOwner().getUserId(), expertUsr);
+						expertUsers.put(answer.getOwner().getUserId(), expertUsr);
 						List<AnswerUserList> answerUserList = (expertUsr.getAnswerUserList());
 						if (answerUserList == null || answerUserList.size() == 0) {
 							answerUserList = new ArrayList<AnswerUserList>();
 						}
 						answerUserList.add(new AnswerUserList(answer, ontoList));
 						expertUsr.setAnswerUserList(answerUserList);
-
 						System.out.println(expertUsr);
 					}
-
+					sentences=null;
 				}
-
+				answer=null;
 			}
-			System.out.println(expertUser);
+			System.out.println(expertUsers);
 		}
-		reducer(completeOntoList);
-		System.out.println(completeOntoList);
+		int BEST_ANSWER_WEIGHT =10;
+		for (ExpertUser expertUserEntry : expertUsers.values()) {
+			for (AnswerUserList entry : expertUserEntry.getAnswerUserList()) {
+				if(entry.isBestAnswer())
+				{
+					for (OntologyNode answeredOntology : entry.getOntology()) {
+						UserExpertise expertise =expertUserEntry.getUserExpertise().get(answeredOntology.getEntity());
+						if(expertise==null)
+						{
+							expertise=new UserExpertise(answeredOntology.getEntity());
+						}
+						expertise.setSkill(expertise.getSkill()+BEST_ANSWER_WEIGHT);
+						expertUserEntry.getUserExpertise().put(answeredOntology.getEntity(),expertise);	
+					};
+				}
+			}
+			
+			//Since all the answers have been iterated and ontology has been extracted, reset the List.
+			expertUserEntry.setAnswerUserList(null);
+		}
+		System.out.println(expertUsers);
+		//reducer(completeOntoList);
+		//System.out.println(completeOntoList);
 	}
 
 	/**
@@ -119,6 +143,7 @@ public class InputReader {
 			entries = null;
 		}
 		ontoList = new ArrayList<OntologyNode>(ontologyMap.values());
+		ontologyMap=null;
 		Collections.sort(ontoList, new Comparator<OntologyNode>() {
 			public int compare(OntologyNode o1, OntologyNode o2) {
 				// TODO Auto-generated method stub
