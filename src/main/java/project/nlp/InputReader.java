@@ -84,35 +84,46 @@ public class InputReader {
 						expertUsr.setAnswerUserList(answerUserList);
 						System.out.println(expertUsr);
 					}
-					sentences=null;
+					sentences = null;
 				}
-				answer=null;
+				answer = null;
 			}
 			System.out.println(expertUsers);
 		}
-		int BEST_ANSWER_WEIGHT =10;
+		int BEST_ANSWER_WEIGHT = 10;
+		int BEST_ANSWERTAG_WEIGHT = 15;
 		for (ExpertUser expertUserEntry : expertUsers.values()) {
 			for (AnswerUserList entry : expertUserEntry.getAnswerUserList()) {
-				if(entry.isBestAnswer())
-				{
+				if (entry.isBestAnswer()) {
 					for (OntologyNode answeredOntology : entry.getOntology()) {
-						UserExpertise expertise =expertUserEntry.getUserExpertise().get(answeredOntology.getEntity());
-						if(expertise==null)
-						{
-							expertise=new UserExpertise(answeredOntology.getEntity());
-						}
-						expertise.setSkill(expertise.getSkill()+BEST_ANSWER_WEIGHT);
-						expertUserEntry.getUserExpertise().put(answeredOntology.getEntity(),expertise);	
-					};
+						incrementWeightForIdentifiedSkill(BEST_ANSWER_WEIGHT, expertUserEntry, answeredOntology.getEntity());
+					}
+					//incrementWeightForIdentifiedSkill(BEST_ANSWER_WEIGHT, expertUserEntry, );
 				}
+
 			}
-			
-			//Since all the answers have been iterated and ontology has been extracted, reset the List.
+
+			// Since all the answers have been iterated and ontology has been
+			// extracted, reset the List.
 			expertUserEntry.setAnswerUserList(null);
 		}
 		System.out.println(expertUsers);
-		//reducer(completeOntoList);
-		//System.out.println(completeOntoList);
+		// reducer(completeOntoList);
+		// System.out.println(completeOntoList);
+	}
+
+	/**
+	 * @param BEST_ANSWER_WEIGHT
+	 * @param expertUserEntry
+	 * @param answeredOntology
+	 */
+	public void incrementWeightForIdentifiedSkill(int BEST_ANSWER_WEIGHT, ExpertUser expertUserEntry, String skill) {
+		UserExpertise expertise = expertUserEntry.getUserExpertise().get(skill);
+		if (expertise == null) {
+			expertise = new UserExpertise(skill);
+		}
+		expertise.setSkill(expertise.getSkill() + BEST_ANSWER_WEIGHT);
+		expertUserEntry.getUserExpertise().put(skill, expertise);
 	}
 
 	/**
@@ -143,7 +154,7 @@ public class InputReader {
 			entries = null;
 		}
 		ontoList = new ArrayList<OntologyNode>(ontologyMap.values());
-		ontologyMap=null;
+		ontologyMap = null;
 		Collections.sort(ontoList, new Comparator<OntologyNode>() {
 			public int compare(OntologyNode o1, OntologyNode o2) {
 				// TODO Auto-generated method stub
