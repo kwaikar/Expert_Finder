@@ -25,6 +25,13 @@ public class UserExpertise {
 	public void setWeight(double weight) {
 		this.weight = weight;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "UserExpertise [skill=" + skill + ", weight=" + weight + "]";
+	}
 	
 	
 
