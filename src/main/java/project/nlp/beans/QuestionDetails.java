@@ -33,6 +33,23 @@ public class QuestionDetails {
 	@JsonProperty(value = "is_answered")
 	private Boolean isAnswered;
 	
+	private int threadmaxUpvoteCount=0;
+	private int threadmaxDownvoteCount=0;
+
+	/**
+	 * @return the threadmaxDownvoteCount
+	 */
+	public int getThreadmaxDownvoteCount() {
+		return threadmaxDownvoteCount;
+	}
+
+	/**
+	 * @param threadmaxDownvoteCount the threadmaxDownvoteCount to set
+	 */
+	public void setThreadmaxDownvoteCount(int threadmaxDownvoteCount) {
+		this.threadmaxDownvoteCount = threadmaxDownvoteCount;
+	}
+
 	private List<String> tags = new ArrayList<String>();
 
 	/**
@@ -235,5 +252,20 @@ public class QuestionDetails {
 		this.userId = userId;
 	}
 
+	/**
+	 * @return the threadmaxCount
+	 */
+	public int getThreadmaxCount() {
+		return threadmaxUpvoteCount;
+	}
+
+	/**
+	 * @param threadmaxCount the threadmaxCount to set
+	 */
+	public void setThreadmaxCount(int threadmaxCount) {
+		this.threadmaxUpvoteCount = threadmaxCount;
+	}
+
+ 
 
 }

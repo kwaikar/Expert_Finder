@@ -13,6 +13,7 @@ public class AnswerUserList {
 	int noOfDownvotes;
 	String[] tags = null;
 	int score; 
+	int threadUpvotesMaxCount;
 	List<OntologyNode> ontologyNode = new ArrayList<OntologyNode>();
 	
 	public AnswerUserList(Answer answer,List<OntologyNode> ontologyNode){
@@ -22,9 +23,26 @@ public class AnswerUserList {
 		 this.tags = answer.getTags();
 		 this.score = answer.getScore();
 		 this.ontologyNode = ontologyNode;
-		
+		this.threadUpvotesMaxCount = answer.getThreadUpvoteCount();
+		this.threadmaxDownvoteCount = answer.getThreadmaxDownvoteCount();
+	}
+	private int threadmaxDownvoteCount=0;
+
+	/**
+	 * @return the threadmaxDownvoteCount
+	 */
+	public int getThreadmaxDownvoteCount() {
+		return threadmaxDownvoteCount;
+	}
+
+	/**
+	 * @param threadmaxDownvoteCount the threadmaxDownvoteCount to set
+	 */
+	public void setThreadmaxDownvoteCount(int threadmaxDownvoteCount) {
+		this.threadmaxDownvoteCount = threadmaxDownvoteCount;
 	}
 	/**
+	 * 
 	 * @return the ontologyNode
 	 */
 	public List<OntologyNode> getOntologyNode() {
@@ -74,15 +92,27 @@ public class AnswerUserList {
 	public void setOntology(List<OntologyNode> ontology) {
 		this.ontology = ontology;
 	}
+	/**
+	 * @return the threadUpvotesMaxCount
+	 */
+	public int getThreadUpvotesMaxCount() {
+		return threadUpvotesMaxCount;
+	}
+	/**
+	 * @param threadUpvotesMaxCount the threadUpvotesMaxCount to set
+	 */
+	public void setThreadUpvotesMaxCount(int threadUpvotesMaxCount) {
+		this.threadUpvotesMaxCount = threadUpvotesMaxCount;
+	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "AnswerUserList [bestAnswer=" + bestAnswer + ", noOfUpvotes=" + noOfUpvotes + ", noOfDownvotes="
-				+ noOfDownvotes + ", tags=" + Arrays.toString(tags) + ", score=" + score + ", ontologyNode=" + ontologyNode + ", ontology=" + ontology + "]";
+				+ noOfDownvotes + ", tags=" + Arrays.toString(tags) + ", score=" + score + ", threadUpvotesMaxCount="
+				+ threadUpvotesMaxCount + ", ontologyNode=" + ontologyNode + ", ontology=" + ontology + "]";
 	}
-	
-	
+ 
 
 }

@@ -1,5 +1,7 @@
 package project.nlp.beans;
 
+import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -27,6 +29,22 @@ public class Answer {
 	private boolean is_accepted  ;
 	private String[] tags = null;
 	private int score;
+	private int threadUpvoteCount=0;
+	private int threadmaxDownvoteCount=0;
+
+	/**
+	 * @return the threadmaxDownvoteCount
+	 */
+	public int getThreadmaxDownvoteCount() {
+		return threadmaxDownvoteCount;
+	}
+
+	/**
+	 * @param threadmaxDownvoteCount the threadmaxDownvoteCount to set
+	 */
+	public void setThreadmaxDownvoteCount(int threadmaxDownvoteCount) {
+		this.threadmaxDownvoteCount = threadmaxDownvoteCount;
+	}
 	/**
 	 * @return the score
 	 */
@@ -126,6 +144,27 @@ public class Answer {
 	 */
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	/**
+	 * @return the threadUpvoteCount
+	 */
+	public int getThreadUpvoteCount() {
+		return threadUpvoteCount;
+	}
+	/**
+	 * @param threadUpvoteCount the threadUpvoteCount to set
+	 */
+	public void setThreadUpvoteCount(int threadUpvoteCount) {
+		this.threadUpvoteCount = threadUpvoteCount;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Answer [owner=" + owner + ", downVotes=" + downVotes + ", upVotes=" + upVotes + ", is_accepted="
+				+ is_accepted + ", tags=" + Arrays.toString(tags) + ", score=" + score + ", threadUpvoteCount="
+				+ threadUpvoteCount + ", answer_id=" + answer_id + ", body=" + body + ", title=" + title + "]";
 	}	
 
 

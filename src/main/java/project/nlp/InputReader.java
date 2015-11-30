@@ -61,7 +61,17 @@ public class InputReader {
 			questionSentence.add(cleanedString(question.getTitle()));
 			List<OntologyNode> questionOntology = extractOntology(questionSentence);
 			for (Answer answer : question.getAnswers()) {
+				if (answer.getUpVotes() > question.getThreadmaxCount()) {
+					question.setThreadmaxCount(answer.getUpVotes());
+				}
+				if (answer.getDownVotes()<  question.getThreadmaxDownvoteCount()) {
+					question.setThreadmaxDownvoteCount(answer.getThreadmaxDownvoteCount());
+				}
+			}
 
+			for (Answer answer : question.getAnswers()) {
+
+				answer.setThreadUpvoteCount(question.getThreadmaxCount());
 				if (!(answer.getDownVotes() == 0 && answer.getUpVotes() == 0)) {
 					Set<String> sentences = new HashSet<String>();
 
@@ -92,15 +102,38 @@ public class InputReader {
 		}
 		int BEST_ANSWER_WEIGHT = 10;
 		int BEST_ANSWERTAG_WEIGHT = 15;
+		int NORMALIZED_UPVOTE_WEIGHT = 8;
+		int NORMALIZED_DOWNVOTE_WEIGHT = -8;
 		for (ExpertUser expertUserEntry : expertUsers.values()) {
 			for (AnswerUserList entry : expertUserEntry.getAnswerUserList()) {
+				// Feature 1 : If Best Answer, import entire
 				if (entry.isBestAnswer()) {
 					for (OntologyNode answeredOntology : entry.getOntology()) {
-						incrementWeightForIdentifiedSkill(BEST_ANSWER_WEIGHT, expertUserEntry, answeredOntology.getEntity());
+						incrementWeightForIdentifiedSkill(BEST_ANSWER_WEIGHT, expertUserEntry,
+								answeredOntology.getEntity());
 					}
-					//incrementWeightForIdentifiedSkill(BEST_ANSWER_WEIGHT, expertUserEntry, );
+					for (String tag : entry.getTags()) {
+						incrementWeightForIdentifiedSkill(BEST_ANSWERTAG_WEIGHT, expertUserEntry, tag);
+					}
 				}
 
+				// NORMALIZED_UPVOTE_WEIGHT
+				for (OntologyNode answeredOntology : entry.getOntology()) {
+					incrementWeightForIdentifiedSkill(
+							NORMALIZED_UPVOTE_WEIGHT
+									* ((double) entry.getNoOfUpvotes() / entry.getThreadUpvotesMaxCount()),
+							expertUserEntry, answeredOntology.getEntity());
+				}
+
+				// NORMALIZED_DOWNVOTE_WEIGHT
+				for (OntologyNode answeredOntology : entry.getOntology()) {
+					incrementWeightForIdentifiedSkill(
+							NORMALIZED_DOWNVOTE_WEIGHT
+									* ((double) entry.getNoOfDownvotes() / entry.getThreadmaxDownvoteCount()),
+							expertUserEntry, answeredOntology.getEntity());
+				}
+
+				
 			}
 
 			// Since all the answers have been iterated and ontology has been
@@ -117,7 +150,7 @@ public class InputReader {
 	 * @param expertUserEntry
 	 * @param answeredOntology
 	 */
-	public void incrementWeightForIdentifiedSkill(int BEST_ANSWER_WEIGHT, ExpertUser expertUserEntry, String skill) {
+	public void incrementWeightForIdentifiedSkill(double BEST_ANSWER_WEIGHT, ExpertUser expertUserEntry, String skill) {
 		UserExpertise expertise = expertUserEntry.getUserExpertise().get(skill);
 		if (expertise == null) {
 			expertise = new UserExpertise(skill);
