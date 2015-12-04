@@ -65,7 +65,7 @@ Set<String> stopWords = null;
 			String previousNoun = null;
 			for (TaggedWord tw : taggedSent) {
 				if (StringUtils.isNotBlank(tw.word())) {
-					if (tw.tag().startsWith("NN")) {
+					if (tw.tag().startsWith("NNP") || tw.tag().startsWith("NNPS")) {
 						if (previousNoun != null) {
 							entities.remove(previousNoun);
 							previousNoun = previousNoun + " " + tw.word();
@@ -79,7 +79,6 @@ Set<String> stopWords = null;
 							{
 							entities.add(tw.word());
 							}
-							//System.out.println(tw.word() + " : " + tw.tag());
 							previousNoun = tw.word();
 						}
 					} else {

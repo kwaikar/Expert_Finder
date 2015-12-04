@@ -1,0 +1,52 @@
+{
+	"items": [{
+		"answers": [{
+			"owner": {
+				"reputation": 90,
+				"user_id": 2960660,
+				"user_type": "registered",
+				"profile_image": "https://i.stack.imgur.com/SrVy4.jpg?s=128&g=1",
+				"display_name": "Laercio",
+				"link": "http://stackoverflow.com/users/2960660/laercio"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 10,
+			"is_accepted": true,
+			"score": 10,
+			"last_activity_date": 1446408088,
+			"creation_date": 1446408088,
+			"answer_id": 33466587,
+			"question_id": 32987968,
+			"title": "Java Server to handle HTTP GET/POST and receive &amp; respond in JSON",
+			"body": "<p>In order to enable a SparkJava application to receive external requests, you have to enable CORS. Add the following snippet before any route/filter.</p>\n\n<pre><code>        options(\"/*\",\n            (request, response) -&gt; {\n\n                String accessControlRequestHeaders = request\n                        .headers(\"Access-Control-Request-Headers\");\n                if (accessControlRequestHeaders != null) {\n                    response.header(\"Access-Control-Allow-Headers\",\n                            accessControlRequestHeaders);\n                }\n\n                String accessControlRequestMethod = request\n                        .headers(\"Access-Control-Request-Method\");\n                if (accessControlRequestMethod != null) {\n                    response.header(\"Access-Control-Allow-Methods\",\n                            accessControlRequestMethod);\n                }\n\n                return \"OK\";\n            });\n</code></pre>\n\n<p>On client side (angularjs), do the following</p>\n\n<pre><code>$httpProvider.defaults.useXDomain = true;\n</code></pre>\n"
+		}],
+		"tags": [
+			"java",
+			"http",
+			"post",
+			"get",
+			"spark-java"
+		],
+		"owner": {
+			"reputation": 1,
+			"user_id": 5384917,
+			"user_type": "registered",
+			"profile_image": "https://www.gravatar.com/avatar/4d69c80096c5cd2cb93f59efc7482d70?s=128&d=identicon&r=PG&f=1",
+			"display_name": "S. Agarwal",
+			"link": "http://stackoverflow.com/users/5384917/s-agarwal"
+		},
+		"is_answered": true,
+		"view_count": 45,
+		"down_vote_count": 1,
+		"up_vote_count": 10,
+		"answer_count": 9,
+		"score": -1,
+		"last_activity_date": 1446408088,
+		"creation_date": 1444208287,
+		"question_id": 32987968,
+		"link": "http://stackoverflow.com/questions/32987968/java-server-to-handle-http-get-post-and-receive-respond-in-json",
+		"title": "Java Server to handle HTTP GET/POST and receive &amp; respond in JSON",
+		"body": "<p>I want to write a code in Java which will act as sever for my angular front end(hosted on another server, npm). I need to receive the request, take values from the JSON sent and return a JSON.\nI have looked into <a href=\"http://sparkjava.com/documentation.html\" rel=\"nofollow\">sparkJava</a>. It looks perfect for me because I need to handle multiple requests like (/authentication, /records, /user/Details etc).\nThe problem I am having with Spark is that it is not able to receive request from another server. It works fine if front end is also hosted inside it.</p>\n"
+	}]
+}

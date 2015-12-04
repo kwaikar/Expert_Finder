@@ -14,6 +14,8 @@ public class ExpertUser {
 	/**
 	 * @return the owner
 	 */
+	
+	
 	public Owner getOwner() {
 		return owner;
 	}
