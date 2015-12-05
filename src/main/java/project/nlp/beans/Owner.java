@@ -14,7 +14,20 @@ public Owner() {
 	private String userId  ; 
 	@JsonProperty(value = "display_name")
 	private String displayName  ; 
-	private int reputation  ;
+	private String link  ;
+	private int reputation;
+	/**
+	 * @return the link
+	 */
+	public String getLink() {
+		return link;
+	}
+	/**
+	 * @param link the link to set
+	 */
+	public void setLink(String link) {
+		this.link = link;
+	}
 	/**
 	 * @return the userId
 	 */

@@ -27,6 +27,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import project.nlp.beans.OntologyNode;
+import project.nlp.beans.Owner;
 import project.nlp.beans.UserExpertise;
 
 /**
@@ -77,10 +78,8 @@ public class IndexAndSearch {
 	 * @throws ParseException
 	 */
 	public void deleteDocuments(String queryStringColumn, String queryStringValue) throws IOException, ParseException {
-		IndexWriter w = openIndexWriter();
 		Query query = new QueryParser(queryStringColumn, analyzer).parse(queryStringValue);
-		w.deleteDocuments(query);
-		closeIndexWriter();
+		writer.deleteDocuments(query);
 	}
 
 	/**
@@ -90,7 +89,7 @@ public class IndexAndSearch {
 	 * @param isbn
 	 * @throws IOException
 	 */
-	public void indexDoc(String userId, Collection<UserExpertise> expertise) throws IOException {
+	public void indexDoc(Owner owner, Collection<UserExpertise> expertise) throws IOException {
 		Document doc = new Document();
 		FieldType myStringType = new FieldType(TextField.TYPE_STORED);
 		myStringType.setOmitNorms(false);
@@ -104,7 +103,9 @@ public class IndexAndSearch {
 			// field.setBoost( ((Double)expert.getWeight()).floatValue());
 			doc.add(field);
 		}
-		doc.add(new StringField("userId", userId, Field.Store.YES));
+
+		doc.add(new StringField("link", owner.getLink(), Field.Store.YES));
+		doc.add(new StringField("userId", owner.getUserId(), Field.Store.YES));
 		writer.addDocument(doc);
 	}
 
@@ -115,7 +116,7 @@ public class IndexAndSearch {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<Document> searchIndex(List<OntologyNode> skills) throws IOException {
+	public List<String> searchIndex(List<OntologyNode> skills) throws IOException {
 		int hitsPerPage = 10;
 		Query query = null;
 
@@ -127,6 +128,7 @@ public class IndexAndSearch {
 			for (OntologyNode ontologyNode : skills) {
 				sb.append(" " + ontologyNode.getEntity().toLowerCase());
 			}
+			System.out.println(sb.toString());
 			query = new QueryParser("skill", analyzer).parse(sb.toString() /* "wildfly and rest" */);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -135,11 +137,11 @@ public class IndexAndSearch {
 		ScoreDoc[] hits = results.scoreDocs;
 
 		System.out.println("Found " + hits.length + " hits.");
-		List<Document> docs = new LinkedList<Document>();
+		List<String> docs = new LinkedList<String>();
 		for (int i = 0; i < hits.length; ++i) {
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
-			docs.add(d);
+			docs.add(d.get("userId") );
 			System.out.println((i + 1) + ". " + d.get("userId") + "\t");
 		}
 		reader.close();
