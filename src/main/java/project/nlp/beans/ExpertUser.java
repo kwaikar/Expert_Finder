@@ -14,6 +14,9 @@ public class ExpertUser {
 	/**
 	 * @return the owner
 	 */
+	public ExpertUser() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	
 	public Owner getOwner() {

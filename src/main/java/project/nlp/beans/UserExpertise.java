@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserExpertise {
 	
-	
+	public UserExpertise() {
+		// TODO Auto-generated constructor stub
+	}
 	public UserExpertise(String skill) {
 		super();
 		this.skill = skill;

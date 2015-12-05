@@ -3,12 +3,14 @@ package project.nlp;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
@@ -24,6 +26,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import project.nlp.beans.OntologyNode;
+import project.nlp.beans.UserExpertise;
+
 /**
  * This class builds Lucene index for the given schema and searches the same.
  */
@@ -31,10 +36,13 @@ public class IndexAndSearch {
 
 	Path indexPath = null;
 	StandardAnalyzer analyzer = null;
+	IndexWriter writer = null;
 
-	public IndexAndSearch(String path) {
+	public IndexAndSearch(String path) throws Exception {
 		indexPath = Paths.get(path);
 		analyzer = new StandardAnalyzer();
+
+		writer = openIndexWriter();
 	}
 
 	/**
@@ -43,7 +51,7 @@ public class IndexAndSearch {
 	 * @param writer
 	 * @throws IOException
 	 */
-	private void closeIndexWriter(IndexWriter writer) throws IOException {
+	public void closeIndexWriter() throws IOException {
 		writer.commit();
 		writer.close();
 	}
@@ -62,44 +70,42 @@ public class IndexAndSearch {
 	}
 
 	/**
-	 * This method indexes documents
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public void indexDocuments() throws IOException {
-		IndexWriter w = openIndexWriter();
-		addDoc(w, "Java Server to handle HTTP GET/POST and receive &amp; respond in JSON", "32987968");
-		closeIndexWriter(w);
-	}
-
-	/**
 	 * This method deletes documents from the index based on query provided.
 	 * 
 	 * @param queryString
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public void deleteDocuments(String queryStringColumn,String queryStringValue) throws IOException, ParseException {
+	public void deleteDocuments(String queryStringColumn, String queryStringValue) throws IOException, ParseException {
 		IndexWriter w = openIndexWriter();
 		Query query = new QueryParser(queryStringColumn, analyzer).parse(queryStringValue);
 		w.deleteDocuments(query);
-		closeIndexWriter(w);
+		closeIndexWriter();
 	}
 
 	/**
 	 * This method writes the document to index.
 	 * 
-	 * @param w
 	 * @param title
 	 * @param isbn
 	 * @throws IOException
 	 */
-	private void addDoc(IndexWriter w, String title, String isbn) throws IOException {
+	public void indexDoc(String userId, Collection<UserExpertise> expertise) throws IOException {
 		Document doc = new Document();
-		doc.add(new TextField("title", title, Field.Store.YES));
-		doc.add(new StringField("question_id", isbn, Field.Store.YES));
-		w.addDocument(doc);
+		FieldType myStringType = new FieldType(TextField.TYPE_STORED);
+		myStringType.setOmitNorms(false);
+		for (UserExpertise expert : expertise) {
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < expert.getWeight(); i++) {
+				sb.append(expert.getSkill() + " ");
+			}
+			Field field = new Field("skill", sb.toString(), myStringType);
+			// field.setBoost( ((Double)expert.getWeight()).floatValue());
+			doc.add(field);
+		}
+		doc.add(new StringField("userId", userId, Field.Store.YES));
+		writer.addDocument(doc);
 	}
 
 	/**
@@ -109,7 +115,7 @@ public class IndexAndSearch {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<Document> searchIndex(String queryStringColumn,String queryStringValue) throws IOException {
+	public List<Document> searchIndex(List<OntologyNode> skills) throws IOException {
 		int hitsPerPage = 10;
 		Query query = null;
 
@@ -117,7 +123,11 @@ public class IndexAndSearch {
 		IndexSearcher searcher = new IndexSearcher(reader);
 
 		try {
-			query = new QueryParser(queryStringColumn, analyzer).parse(queryStringValue);
+			StringBuilder sb = new StringBuilder();
+			for (OntologyNode ontologyNode : skills) {
+				sb.append(" " + ontologyNode.getEntity().toLowerCase());
+			}
+			query = new QueryParser("skill", analyzer).parse(sb.toString() /* "wildfly and rest" */);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -130,7 +140,7 @@ public class IndexAndSearch {
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
 			docs.add(d);
-			System.out.println((i + 1) + ". " + d.get("isbn") + "\t" + d.get("title"));
+			System.out.println((i + 1) + ". " + d.get("userId") + "\t");
 		}
 		reader.close();
 		return docs;

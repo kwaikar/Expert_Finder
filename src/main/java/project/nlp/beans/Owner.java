@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Owner {
-
+public Owner() {
+	// TODO Auto-generated constructor stub
+}
  
 	 
 	@JsonProperty(value = "user_id")
