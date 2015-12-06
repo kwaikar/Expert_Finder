@@ -150,7 +150,7 @@ public class IndexAndSearch {
 		try {
 			StringBuilder sb = new StringBuilder();
 			for (OntologyNode ontologyNode : skills) {
-				sb.append((sb.toString().length()==0?" ":" AND " )+ ontologyNode.getEntity().toLowerCase());
+				sb.append((sb.toString().length()==0?" ":" OR " )+ ontologyNode.getEntity().toLowerCase());
 			}
 			System.out.println("Primary Skill Set identified: " +sb.toString());
 			String queryStr= /*"skill:" + sb.toString() + " OR" (*/"topSkill:" + sb.toString();/*")^50"*/;

@@ -24,12 +24,14 @@ import project.nlp.beans.AnswerUserList;
 import project.nlp.beans.ExpertUser;
 import project.nlp.beans.Items;
 import project.nlp.beans.OntologyNode;
+import project.nlp.beans.Owner;
 import project.nlp.beans.Question;
 import project.nlp.beans.QuestionDetails;
+import project.nlp.beans.SimpleQuestion;
 import project.nlp.beans.UserExpertise;
 
 /**
- * Hello world!
+ * This class Reads Stack overflow data files and exposes methods that return the Most skillful users who can answer the question based on their answering history on stackoverflow!
  *
  */
 public class InputReader {
@@ -38,13 +40,56 @@ public class InputReader {
 
 	private static TaggerUtil tagger = null;
 
-	Set<String> topSkills =new HashSet<String>();
+	Set<String> topSkills = new HashSet<String>();
+
 	static {
 		tagger = new TaggerUtil();
 	}
 
-	public void readJson(String fileName) throws Exception {
-		
+	/**
+	 * This method returns the Baseline user. It first parses and extracts ontology from the question and returns the user who has knowledge about the topic
+	 * @param fileName
+	 * @param inputQuestion
+	 * @return
+	 * @throws Exception
+	 */
+	public Owner getBaseLineUser(String fileName,   String inputQuestion) throws Exception {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		File inputQuestionAnswersData = new File(this.getClass().getResource(fileName).getFile());
+		Items items = mapper.readValue(inputQuestionAnswersData, Items.class);
+
+		File questions = new File(this.getClass().getResource(inputQuestion).getFile());
+		SimpleQuestion question = mapper.readValue(questions, SimpleQuestion.class);
+		List<String> nodes = tagger.extractNounEntities(question.getTitle());
+
+		for (QuestionDetails singleQuestion : items.getItems()) {
+
+			for (Answer answer : singleQuestion.getAnswers()) {
+				int count = 0;
+				for (String string : nodes) {
+					if (answer.getBody().contains(string)) {
+						count++;
+					}
+					if(count==(nodes.size()-1))
+					{
+						System.out.println("Found User who answered question on the topic "+answer.getOwner().getUserId()+ "->"+singleQuestion.getLink());
+						return answer.getOwner();
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * This method reads the Json input file and loads the index.
+	 * @param fileName
+	 * @throws Exception
+	 */
+	public void readStackOverFlowJsonAndLoadIndex(String fileName) throws Exception {
+
 		ObjectMapper mapper = new ObjectMapper();
 		// if (!new File("S:/nlp/index").exists()) {
 		IndexAndSearch indexer = getIndexerAndSearcher();
@@ -67,10 +112,10 @@ public class InputReader {
 				List<OntologyNode> questionOntology = extractQuestionOntology(question);
 				for (Answer answer : question.getAnswers()) {
 					for (String tag : answer.getTags()) {
-						topSkills.add(tag.trim().toLowerCase());	
+						topSkills.add(tag.trim().toLowerCase());
 					}
 					for (String tag : question.getTags()) {
-						topSkills.add(tag.trim().toLowerCase());	
+						topSkills.add(tag.trim().toLowerCase());
 					}
 					if (answer.getUpVotes() > question.getThreadmaxCount()) {
 						question.setThreadmaxCount(answer.getUpVotes());
@@ -121,33 +166,30 @@ public class InputReader {
 				// Feature 1 : If Best Answer, import entire
 				if (entry.isBestAnswer()) {
 					for (String tag : entry.getTags()) {
-						expertUserEntry = incrementWeightForIdentifiedSkill(BEST_ANSWERTAG_WEIGHT, expertUserEntry, tag);
+						expertUserEntry = incrementWeightForIdentifiedSkill(BEST_ANSWERTAG_WEIGHT, expertUserEntry,
+								tag);
 					}
-					
+
 					for (OntologyNode answeredOntology : entry.getOntologyNode()) {
 						expertUserEntry = incrementWeightForIdentifiedSkill(
 								BEST_ANSWER_WEIGHT * answeredOntology.getFrequency(), expertUserEntry,
 								answeredOntology.getEntity());
 					}
-					
+
 				}
 
 				// NORMALIZED_UPVOTE_WEIGHT
 				for (OntologyNode answeredOntology : entry.getOntologyNode()) {
-					expertUserEntry = incrementWeightForIdentifiedSkill(
-							NORMALIZED_UPVOTE_WEIGHT
-									* ((double) entry.getNoOfUpvotes() / entry.getThreadUpvotesMaxCount())
-									* answeredOntology.getFrequency(),
-							expertUserEntry, answeredOntology.getEntity());
+					expertUserEntry = incrementWeightForIdentifiedSkill(NORMALIZED_UPVOTE_WEIGHT
+							* ((double) entry.getNoOfUpvotes() / entry.getThreadUpvotesMaxCount())
+							* answeredOntology.getFrequency(), expertUserEntry, answeredOntology.getEntity());
 				}
 
 				// NORMALIZED_DOWNVOTE_WEIGHT
 				for (OntologyNode answeredOntology : entry.getOntologyNode()) {
-					expertUserEntry = incrementWeightForIdentifiedSkill(
-							NORMALIZED_DOWNVOTE_WEIGHT
-									* ((double) entry.getNoOfDownvotes() / entry.getThreadmaxDownvoteCount())
-									* answeredOntology.getFrequency(),
-							expertUserEntry, answeredOntology.getEntity());
+					expertUserEntry = incrementWeightForIdentifiedSkill(NORMALIZED_DOWNVOTE_WEIGHT
+							* ((double) entry.getNoOfDownvotes() / entry.getThreadmaxDownvoteCount())
+							* answeredOntology.getFrequency(), expertUserEntry, answeredOntology.getEntity());
 				}
 				System.out.println("-->" + expertUserEntry.getUserExpertise());
 			}
@@ -192,8 +234,8 @@ public class InputReader {
 	public ExpertUser incrementWeightForIdentifiedSkill(double BEST_ANSWER_WEIGHT, ExpertUser expertUserEntry,
 			String skill) {
 
-		UserExpertise expertise = (!topSkills.contains(skill.toLowerCase().trim())) ? expertUserEntry.getUserExpertise().get(skill)
-				: expertUserEntry.getTopSkills().get(skill);
+		UserExpertise expertise = (!topSkills.contains(skill.toLowerCase().trim()))
+				? expertUserEntry.getUserExpertise().get(skill) : expertUserEntry.getTopSkills().get(skill);
 		if (expertise == null) {
 			expertise = new UserExpertise(skill);
 		}
@@ -286,7 +328,7 @@ public class InputReader {
 	public static void main(String[] args) throws Exception {
 
 		InputReader ir = new InputReader();
-		ir.readJson("/resources/questions_smaller_subset.json");
+		ir.readStackOverFlowJsonAndLoadIndex("/resources/questions_smaller_subset.json");
 	}
 
 	/**

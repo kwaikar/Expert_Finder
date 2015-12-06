@@ -65,11 +65,11 @@ Set<String> stopWords = null;
 			String previousNoun = null;
 			for (TaggedWord tw : taggedSent) {
 				if (StringUtils.isNotBlank(tw.word())) {
-					if (tw.tag().startsWith("NNP") || tw.tag().startsWith("NNPS")) {
+					if (tw.tag().startsWith("NN") ) {
 						if (previousNoun != null) {
 							entities.remove(previousNoun);
 							previousNoun = previousNoun + " " + tw.word();
-							if(!stopWords.contains(previousNoun.toLowerCase().replaceAll("[:,//?]","")))
+							if(!stopWords.contains(previousNoun.trim().toLowerCase().replaceAll("[:,//?]","")) && (!stopWords.contains(tw.word().trim().toLowerCase())))
 							{
 								entities.add(previousNoun);	
 							}

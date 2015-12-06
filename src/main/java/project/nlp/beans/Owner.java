@@ -63,6 +63,14 @@ public Owner() {
 	 */
 	public void setReputation(int reputation) {
 		this.reputation = reputation;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Owner [userId=" + userId + ", displayName=" + displayName + ", link=" + link + ", reputation="
+				+ reputation + "]";
 	} 
 	
 	
