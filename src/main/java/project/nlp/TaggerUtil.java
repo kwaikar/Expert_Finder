@@ -78,8 +78,12 @@ Set<String> stopWords = null;
 							if(!stopWords.contains(tw.word().toLowerCase()))
 							{
 							entities.add(tw.word());
-							}
 							previousNoun = tw.word();
+							}
+							else
+							{
+								previousNoun="";
+							}
 						}
 					} else {
 						previousNoun = null;

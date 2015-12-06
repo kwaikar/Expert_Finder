@@ -24,6 +24,7 @@ import project.nlp.beans.AnswerUserList;
 import project.nlp.beans.ExpertUser;
 import project.nlp.beans.Items;
 import project.nlp.beans.OntologyNode;
+import project.nlp.beans.Question;
 import project.nlp.beans.QuestionDetails;
 import project.nlp.beans.UserExpertise;
 
@@ -37,93 +38,116 @@ public class InputReader {
 
 	private static TaggerUtil tagger = null;
 
+	Set<String> topSkills =new HashSet<String>();
 	static {
 		tagger = new TaggerUtil();
 	}
 
-	public void readJson() throws Exception {
+	public void readJson(String fileName) throws Exception {
+		
 		ObjectMapper mapper = new ObjectMapper();
-		File unigramsFile = new File(this.getClass().getResource("/resources/questions_smaller_subset.json").getFile());
-		Items items = mapper.readValue(unigramsFile, Items.class);
 		// if (!new File("S:/nlp/index").exists()) {
-		IndexAndSearch indexer = new IndexAndSearch("S:/nlp/index");
+		IndexAndSearch indexer = getIndexerAndSearcher();
 
 		Map<String, ExpertUser> expertUsers = new HashMap<String, ExpertUser>();
-		for (QuestionDetails question : items.getItems()) {
+		List<String> fileNames = new ArrayList<String>();
+		fileNames.add(fileName);
+		/*
+		 * for (int i = 1; i < 11; i++) {
+		 * fileNames.add("/resources/Production_Data/question_" + i + ".json");
+		 * }
+		 */
+		for (int i = 0; i < fileNames.size(); i++) {
 
-			System.out.println(question.getQuestionId());
-			List<OntologyNode> questionOntology = extractQuestionOntology(question);
-			for (Answer answer : question.getAnswers()) {
-				if (answer.getUpVotes() > question.getThreadmaxCount()) {
-					question.setThreadmaxCount(answer.getUpVotes());
-				}
-				if (answer.getDownVotes() < question.getThreadmaxDownvoteCount()) {
-					question.setThreadmaxDownvoteCount(answer.getThreadmaxDownvoteCount());
-				}
-			}
+			File inputQuestionAnswersData = new File(this.getClass().getResource(fileNames.get(i)).getFile());
+			Items items = mapper.readValue(inputQuestionAnswersData, Items.class);
+			for (QuestionDetails question : items.getItems()) {
 
-			for (Answer answer : question.getAnswers()) {
-
-				answer.setThreadUpvoteCount(question.getThreadmaxCount());
-				if ((answer.getScore() != 0)) {
-					Set<String> sentences = new HashSet<String>();
-
-					sentences.add(cleanedString(answer.getBody()));
-					sentences.add(cleanedString(answer.getTitle()));
-
-					List<OntologyNode> ontoList = extractOntology(sentences);
-					ontoList.addAll(questionOntology);
-					ontoList = reducer(ontoList);
-					ExpertUser expertUsr = expertUsers.get(answer.getOwner().getUserId());
-					if (expertUsr == null) {
-						expertUsr = new ExpertUser();
+				System.out.println(question.getQuestionId());
+				List<OntologyNode> questionOntology = extractQuestionOntology(question);
+				for (Answer answer : question.getAnswers()) {
+					for (String tag : answer.getTags()) {
+						topSkills.add(tag.trim().toLowerCase());	
 					}
-					expertUsr.setOwner(answer.getOwner());
-					expertUsers.put(answer.getOwner().getUserId(), expertUsr);
-					List<AnswerUserList> answerUserList = (expertUsr.getAnswerUserList());
-					if (answerUserList == null || answerUserList.size() == 0) {
-						answerUserList = new ArrayList<AnswerUserList>();
+					for (String tag : question.getTags()) {
+						topSkills.add(tag.trim().toLowerCase());	
 					}
-					answerUserList.add(new AnswerUserList(answer, ontoList));
-					expertUsr.setAnswerUserList(answerUserList);
-
-					sentences = null;
+					if (answer.getUpVotes() > question.getThreadmaxCount()) {
+						question.setThreadmaxCount(answer.getUpVotes());
+					}
+					if (answer.getDownVotes() < question.getThreadmaxDownvoteCount()) {
+						question.setThreadmaxDownvoteCount(answer.getThreadmaxDownvoteCount());
+					}
 				}
-				answer = null;
+
+				for (Answer answer : question.getAnswers()) {
+
+					answer.setThreadUpvoteCount(question.getThreadmaxCount());
+					if ((answer.getScore() != 0)) {
+						Set<String> sentences = new HashSet<String>();
+
+						sentences.add(cleanedString(answer.getBody()));
+						sentences.add(cleanedString(answer.getTitle()));
+
+						List<OntologyNode> ontoList = extractOntology(sentences);
+						ontoList.addAll(questionOntology);
+						ontoList = reducer(ontoList);
+						ExpertUser expertUsr = expertUsers.get(answer.getOwner().getUserId());
+						if (expertUsr == null) {
+							expertUsr = new ExpertUser();
+						}
+						expertUsr.setOwner(answer.getOwner());
+						expertUsers.put(answer.getOwner().getUserId(), expertUsr);
+						List<AnswerUserList> answerUserList = (expertUsr.getAnswerUserList());
+						if (answerUserList == null || answerUserList.size() == 0) {
+							answerUserList = new ArrayList<AnswerUserList>();
+						}
+						answerUserList.add(new AnswerUserList(answer, ontoList));
+						expertUsr.setAnswerUserList(answerUserList);
+
+						sentences = null;
+					}
+					answer = null;
+				}
 			}
 		}
 		System.out.println("Map Received-->" + expertUsers);
-		int BEST_ANSWER_WEIGHT = 10;
-		int BEST_ANSWERTAG_WEIGHT = 100;
-		int NORMALIZED_UPVOTE_WEIGHT = 8;
-		int NORMALIZED_DOWNVOTE_WEIGHT = -8;
+		double BEST_ANSWER_WEIGHT = 9;
+		double BEST_ANSWERTAG_WEIGHT = 8;
+		double NORMALIZED_UPVOTE_WEIGHT = 10;
+		double NORMALIZED_DOWNVOTE_WEIGHT = -1;
 		for (ExpertUser expertUserEntry : expertUsers.values()) {
 			for (AnswerUserList entry : expertUserEntry.getAnswerUserList()) {
 				// Feature 1 : If Best Answer, import entire
 				if (entry.isBestAnswer()) {
+					for (String tag : entry.getTags()) {
+						expertUserEntry = incrementWeightForIdentifiedSkill(BEST_ANSWERTAG_WEIGHT, expertUserEntry, tag);
+					}
+					
 					for (OntologyNode answeredOntology : entry.getOntologyNode()) {
 						expertUserEntry = incrementWeightForIdentifiedSkill(
 								BEST_ANSWER_WEIGHT * answeredOntology.getFrequency(), expertUserEntry,
 								answeredOntology.getEntity());
 					}
-					for (String tag : entry.getTags()) {
-						expertUserEntry = incrementWeightForIdentifiedSkill(BEST_ANSWERTAG_WEIGHT, expertUserEntry,
-								tag);
-					}
+					
 				}
 
 				// NORMALIZED_UPVOTE_WEIGHT
 				for (OntologyNode answeredOntology : entry.getOntologyNode()) {
-					expertUserEntry = incrementWeightForIdentifiedSkill(NORMALIZED_UPVOTE_WEIGHT
-							* ((double) entry.getNoOfUpvotes() / entry.getThreadUpvotesMaxCount())
-							* answeredOntology.getFrequency(), expertUserEntry, answeredOntology.getEntity());
+					expertUserEntry = incrementWeightForIdentifiedSkill(
+							NORMALIZED_UPVOTE_WEIGHT
+									* ((double) entry.getNoOfUpvotes() / entry.getThreadUpvotesMaxCount())
+									* answeredOntology.getFrequency(),
+							expertUserEntry, answeredOntology.getEntity());
 				}
 
 				// NORMALIZED_DOWNVOTE_WEIGHT
 				for (OntologyNode answeredOntology : entry.getOntologyNode()) {
-					expertUserEntry = incrementWeightForIdentifiedSkill(NORMALIZED_DOWNVOTE_WEIGHT
-							* ((double) entry.getNoOfDownvotes() / entry.getThreadmaxDownvoteCount())
-							* answeredOntology.getFrequency(), expertUserEntry, answeredOntology.getEntity());
+					expertUserEntry = incrementWeightForIdentifiedSkill(
+							NORMALIZED_DOWNVOTE_WEIGHT
+									* ((double) entry.getNoOfDownvotes() / entry.getThreadmaxDownvoteCount())
+									* answeredOntology.getFrequency(),
+							expertUserEntry, answeredOntology.getEntity());
 				}
 				System.out.println("-->" + expertUserEntry.getUserExpertise());
 			}
@@ -135,12 +159,14 @@ public class InputReader {
 		}
 
 		for (ExpertUser entry : expertUsers.values()) {
-			indexer.indexDoc(entry.getOwner(), entry.getUserExpertise().values());
+			indexer.indexDoc(entry);
 		}
 		System.out.println(expertUsers);
 		indexer.closeIndexWriter();
 		ObjectMapper obj = new ObjectMapper();
-		FileUtils.writeStringToFile(new File("s:/UserExpertise.json"), obj.writeValueAsString(expertUsers.values()));
+		File outputJsonFileName = new File(("/resources/UserExpertiseTest.json"));
+		System.out.println("Filename->" + outputJsonFileName.getAbsolutePath());
+		FileUtils.writeStringToFile((outputJsonFileName), obj.writeValueAsString(expertUsers.values()));
 
 		// }
 
@@ -150,7 +176,7 @@ public class InputReader {
 	 * @param question
 	 * @return
 	 */
-	public List<OntologyNode> extractQuestionOntology(QuestionDetails question) {
+	public List<OntologyNode> extractQuestionOntology(Question question) {
 		Set<String> questionSentence = new HashSet<String>();
 		questionSentence.add(cleanedString(question.getBody()));
 		questionSentence.add(cleanedString(question.getTitle()));
@@ -165,12 +191,20 @@ public class InputReader {
 	 */
 	public ExpertUser incrementWeightForIdentifiedSkill(double BEST_ANSWER_WEIGHT, ExpertUser expertUserEntry,
 			String skill) {
-		UserExpertise expertise = expertUserEntry.getUserExpertise().get(skill);
+
+		UserExpertise expertise = (!topSkills.contains(skill.toLowerCase().trim())) ? expertUserEntry.getUserExpertise().get(skill)
+				: expertUserEntry.getTopSkills().get(skill);
 		if (expertise == null) {
 			expertise = new UserExpertise(skill);
 		}
 		expertise.setWeight(expertise.getWeight() + BEST_ANSWER_WEIGHT);
-		expertUserEntry.getUserExpertise().put(skill, expertise);
+		if (!topSkills.contains(skill.toLowerCase().trim())) {
+			if (!expertUserEntry.getTopSkills().containsKey(skill)) {
+				expertUserEntry.getUserExpertise().put(skill, expertise);
+			}
+		} else {
+			expertUserEntry.getTopSkills().put(skill, expertise);
+		}
 		return expertUserEntry;
 
 	}
@@ -250,7 +284,10 @@ public class InputReader {
 	}
 
 	public static void main(String[] args) throws Exception {
-		}
+
+		InputReader ir = new InputReader();
+		ir.readJson("/resources/questions_smaller_subset.json");
+	}
 
 	/**
 	 * @param expertiseJsonFile
@@ -266,16 +303,16 @@ public class InputReader {
 		List<ExpertUser> expertUsers = mapper.readValue(file, new TypeReference<List<ExpertUser>>() {
 		});
 		IndexAndSearch indexer = getIndexerAndSearcher();
-		indexer.deleteDocuments("*","*");
+		indexer.deleteDocuments("*", "*");
 		for (ExpertUser entry : expertUsers) {
-			indexer.indexDoc(entry.getOwner(), entry.getUserExpertise().values());
+			indexer.indexDoc(entry);
 		}
 		System.out.println(expertUsers);
 		indexer.closeIndexWriter();
 
 	}
 
-	public List<String> searchIndex(QuestionDetails question) throws Exception {
+	public List<String> searchIndex(Question question) throws Exception {
 		IndexAndSearch indexer = getIndexerAndSearcher();
 		List<OntologyNode> questionOntology = extractQuestionOntology(question);
 		List<String> userIds = indexer.searchIndex(questionOntology);

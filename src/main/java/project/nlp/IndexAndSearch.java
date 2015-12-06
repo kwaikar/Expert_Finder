@@ -3,9 +3,10 @@ package project.nlp;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -14,6 +15,7 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -23,11 +25,13 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.DefaultSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import project.nlp.beans.ExpertUser;
 import project.nlp.beans.OntologyNode;
-import project.nlp.beans.Owner;
 import project.nlp.beans.UserExpertise;
 
 /**
@@ -89,23 +93,43 @@ public class IndexAndSearch {
 	 * @param isbn
 	 * @throws IOException
 	 */
-	public void indexDoc(Owner owner, Collection<UserExpertise> expertise) throws IOException {
+	public void indexDoc(ExpertUser experts) throws IOException {
 		Document doc = new Document();
-		FieldType myStringType = new FieldType(TextField.TYPE_STORED);
+		FieldType myStringType = new FieldType(TextField.TYPE_NOT_STORED);
 		myStringType.setOmitNorms(false);
-		for (UserExpertise expert : expertise) {
+		Set<String> skills = new HashSet<String>();
+		Set<String> topSkills= new HashSet<String>();
+		
+		for (UserExpertise expert : experts.getUserExpertise().values()) {
 
 			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < expert.getWeight(); i++) {
+			for (int i = 0; i < expert.getWeight()*100; i++) {
 				sb.append(expert.getSkill() + " ");
+				
 			}
+			skills.add(expert.getSkill()+"["+((expert.getWeight()*100/100))+"]");
 			Field field = new Field("skill", sb.toString(), myStringType);
 			// field.setBoost( ((Double)expert.getWeight()).floatValue());
 			doc.add(field);
 		}
+		
+		for (UserExpertise expert : experts.getTopSkills().values()) {
 
-		doc.add(new StringField("link", owner.getLink(), Field.Store.YES));
-		doc.add(new StringField("userId", owner.getUserId(), Field.Store.YES));
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < expert.getWeight()*100; i++) {
+				sb.append(expert.getSkill() + " ");
+				
+			}
+			topSkills.add(expert.getSkill()+"["+((expert.getWeight()*100/100))+"]");
+			Field field = new Field("topSkill", sb.toString(), myStringType);
+			doc.add(field);
+		}
+		
+		
+		doc.add(new StringField("skills", skills.toString(), Field.Store.YES));
+		doc.add(new StringField("topSkills", topSkills.toString(), Field.Store.YES));
+		doc.add(new StringField("link", experts.getOwner().getLink(), Field.Store.YES));
+		doc.add(new StringField("userId", experts.getOwner().getUserId(), Field.Store.YES));
 		writer.addDocument(doc);
 	}
 
@@ -122,27 +146,52 @@ public class IndexAndSearch {
 
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(indexPath));
 		IndexSearcher searcher = new IndexSearcher(reader);
-
+		
 		try {
 			StringBuilder sb = new StringBuilder();
 			for (OntologyNode ontologyNode : skills) {
-				sb.append(" " + ontologyNode.getEntity().toLowerCase());
+				sb.append((sb.toString().length()==0?" ":" AND " )+ ontologyNode.getEntity().toLowerCase());
 			}
-			System.out.println(sb.toString());
-			query = new QueryParser("skill", analyzer).parse(sb.toString() /* "wildfly and rest" */);
+			System.out.println("Primary Skill Set identified: " +sb.toString());
+			String queryStr= /*"skill:" + sb.toString() + " OR" (*/"topSkill:" + sb.toString();/*")^50"*/;
+			query = new QueryParser("skill", analyzer).parse(queryStr /* "wildfly and rest" */);
+			System.out.println("==>"+query);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		TopDocs results = searcher.search(query, 5 * hitsPerPage);
-		ScoreDoc[] hits = results.scoreDocs;
-
+		Similarity sim = new DefaultSimilarity() {
+			   @Override
+			public float idf(long docFreq, long numDocs) {
+				// TODO Auto-generated method stub
+				return 1;
+			}
+			  @Override
+			public float tf(float freq) {
+				// TODO Auto-generated method stub
+				return  freq;
+			}
+			   @Override
+			public float queryNorm(float sumOfSquaredWeights) {
+				// TODO Auto-generated method stub
+				return 1;
+			}
+			   @Override
+			public float coord(int overlap, int maxOverlap) {
+				// TODO Auto-generated method stub
+				return super.coord(overlap, maxOverlap)*100;
+			}
+			};
+			searcher.setSimilarity(sim);
+System.out.println(searcher.getDefaultSimilarity());
+			TopDocs results = searcher.search(query, 5 * hitsPerPage);
+			ScoreDoc[] hits = results.scoreDocs;
 		System.out.println("Found " + hits.length + " hits.");
 		List<String> docs = new LinkedList<String>();
 		for (int i = 0; i < hits.length; ++i) {
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
 			docs.add(d.get("userId") );
-			System.out.println((i + 1) + ". " + d.get("userId") + "\t");
+			System.out.println((i + 1) + ". " + d.get("userId")+ "\t"+ d.get("topSkills") + "\t"+ d.get("skills"));
 		}
 		reader.close();
 		return docs;

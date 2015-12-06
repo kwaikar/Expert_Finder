@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import project.nlp.beans.Items;
+import project.nlp.beans.SimpleQuestion;
 
 /**
  * Unit test for simple App.
@@ -20,11 +21,11 @@ public class AppTest extends TestCase {
 		InputReader ir = new InputReader();
 		// ir.readJson();
 		String expertiseJsonFile = ir.getClass().getResource("/resources/UserExpertiseTest.json").getFile();
-		ir.loadIndex(expertiseJsonFile);
+		 ir.loadIndex(expertiseJsonFile);
 		ObjectMapper mapper = new ObjectMapper();
-		File unigramsFile = new File(ir.getClass().getResource("/resources/questions_smaller_subset.json").getFile());
-		Items items = mapper.readValue(unigramsFile, Items.class);
-		List<String> userIds =ir.searchIndex(items.getItems().get(0));
+		File questions = new File(ir.getClass().getResource("/resources/inputQuestion.json").getFile());
+		SimpleQuestion question = mapper.readValue(questions, SimpleQuestion.class);
+		List<String> userIds =ir.searchIndex(question);
 		Assert.assertEquals(userIds.get(0), "2597143");
 
 	}

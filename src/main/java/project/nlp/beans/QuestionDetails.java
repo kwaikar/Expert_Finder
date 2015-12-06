@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class QuestionDetails {
+public class QuestionDetails  implements Question{
 
 
 	 private List<Answer> answers= new ArrayList<Answer>();

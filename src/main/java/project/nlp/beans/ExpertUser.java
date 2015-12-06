@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class ExpertUser {
 	Owner owner = null;
 	HashMap<String,UserExpertise>  userExpertise = new HashMap<String,UserExpertise>();
+	HashMap<String,UserExpertise>  topSkills = new HashMap<String,UserExpertise>();
 	List<AnswerUserList> answerUserList = new ArrayList<AnswerUserList>();
 	/**
 	 * @return the owner
@@ -59,6 +60,22 @@ public class ExpertUser {
 	public String toString() {
 		return "ExpertUser [owner=" + owner +(userExpertise!=null? ", userExpertise=":"") + userExpertise +  ((answerUserList!=null)?", answerUserList=" + answerUserList:"")
 				+ "]";
+	}
+
+
+	/**
+	 * @return the topSkills
+	 */
+	public HashMap<String, UserExpertise> getTopSkills() {
+		return topSkills;
+	}
+
+
+	/**
+	 * @param topSkills the topSkills to set
+	 */
+	public void setTopSkills(HashMap<String, UserExpertise> topSkills) {
+		this.topSkills = topSkills;
 	}
 	
 
