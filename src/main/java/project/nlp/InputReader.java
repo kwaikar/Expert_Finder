@@ -333,6 +333,7 @@ public class InputReader {
 		while (!jsonFile.exists() || jsonFile.isDirectory()) {
 			System.out.println("--------------------------------------------------------------------------------------------------------");
 			System.out.println("Please check filepath - Please make sure your provide complete path of Questions : ");
+			filePath = System.console().readLine("Please provide complete Path of Json for Indexing : ");
 		}  
 			InputReader ir = new InputReader();
 			ir.expertiseExtractor(jsonFile.getAbsolutePath());

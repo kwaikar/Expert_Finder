@@ -157,7 +157,7 @@ public class IndexAndSearch {
 				}
 			}
 			System.out.println("Primary Skill Set identified: " + skillsToBeSearched);
-			String queryStr = "skill:" + sb.toString() + " OR (topSkill:" + sb.toString() + ")^50";
+			String queryStr = "skill:" + sb.toString() + " OR (topSkill:" + sb.toString() + ")^10";
 			query = new QueryParser("skill", analyzer).parse(queryStr /* "wildfly and rest" */);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -197,7 +197,9 @@ public class IndexAndSearch {
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
 			docs.add(d.get("userId"));
+			
 			System.out.println((i + 1) + ". " + d.get("userId") + "\t" + d.get("topSkills") + "\t" + d.get("skills"));
+			System.out.println();
 		}
 		reader.close();
 		return docs;
