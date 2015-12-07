@@ -365,14 +365,15 @@ public class InputReader {
 	/**
 	 * This method accepts a Question object and returns set of user Ids it finds relevant and matching.
 	 * @param question
+	 * @param numResults
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> searchIndex(Question question) throws Exception {
+	public List<String> searchIndex(Question question, int numResults) throws Exception {
 		IndexAndSearch indexer = getIndexerAndSearcher();
 		List<OntologyNode> questionOntology = extractQuestionOntology(question);
 		System.out.println("Ontology found in the question {"+questionOntology+"}");
-		List<String> userIds = indexer.searchIndex(questionOntology);
+		List<String> userIds = indexer.searchIndex(questionOntology,numResults);
 		indexer.closeIndexWriter();
 		return userIds;
 	}
@@ -383,7 +384,6 @@ public class InputReader {
 	 */
 	public IndexAndSearch getIndexerAndSearcher() throws Exception {
 		File f = new File("Expertise_Index");
-		System.out.println("Creating index on " + f.getAbsolutePath());
 		IndexAndSearch indexer = new IndexAndSearch(f.getAbsolutePath());
 		return indexer;
 	}

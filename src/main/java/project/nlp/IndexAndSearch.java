@@ -139,8 +139,7 @@ public class IndexAndSearch {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> searchIndex(List<OntologyNode> skills) throws IOException {
-		int hitsPerPage = 1;
+	public List<String> searchIndex(List<OntologyNode> skills,int numResults) throws IOException {
 		Query query = null;
 
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(indexPath));
@@ -188,7 +187,7 @@ public class IndexAndSearch {
 		};
 		searcher.setSimilarity(sim);
 		System.out.println(searcher.getDefaultSimilarity());
-		TopDocs results = searcher.search(query, 5 * hitsPerPage);
+		TopDocs results = searcher.search(query,  numResults);
 		ScoreDoc[] hits = results.scoreDocs;
 		System.out.println("Found " + hits.length + " hits.");
 		List<String> docs = new LinkedList<String>();
