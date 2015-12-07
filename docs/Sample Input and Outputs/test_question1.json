@@ -1,0 +1,4 @@
+{
+			"title": "Java web service architecture with REST",
+			"body": "<p>I think you should use any light ESB, like Camel, Mule or Spring Integration. If you have already worked with Spring probably the latter will be the easiest for you.</p>\n\n<p>The purpose of this kind of apps is to facilitate the task of communicating anything with anything (on this case, an HTTP endpoint with your offline app).</p>\n\n<p>Take a look at this:</p>\n\n<p><a href=\"https://www.google.ie/webhp?sourceid=chrome-instant&amp;ion=1&amp;espv=2&amp;ie=UTF-8#q=spring%20integration%20http-inbound\" rel=\"nofollow\">https://www.google.ie/webhp?sourceid=chrome-instant&amp;ion=1&amp;espv=2&amp;ie=UTF-8#q=spring%20integration%20http-inbound</a></p>\n"
+		}

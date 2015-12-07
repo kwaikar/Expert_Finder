@@ -1,0 +1,248 @@
+{
+  "items": [
+    {
+		"answers": [{
+			"owner": {
+				"reputation": 5287,
+				"user_id": 1585767,
+				"user_type": "registered",
+				"accept_rate": 81,
+				"profile_image": "https://i.stack.imgur.com/BZYwN.jpg?s=128&g=1",
+				"display_name": "Andres",
+				"link": "http://stackoverflow.com/users/1585767/andres"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 10,
+			"is_accepted": false,
+			"score": 1,
+			"last_activity_date": 1445270112,
+			"creation_date": 1445270112,
+			"answer_id": 33218853,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>I think you should use any light ESB, like Camel, Mule or Spring Integration. If you have already worked with Spring probably the latter will be the easiest for you.</p>\n\n<p>The purpose of this kind of apps is to facilitate the task of communicating anything with anything (on this case, an HTTP endpoint with your offline app).</p>\n\n<p>Take a look at this:</p>\n\n<p><a href=\"https://www.google.ie/webhp?sourceid=chrome-instant&amp;ion=1&amp;espv=2&amp;ie=UTF-8#q=spring%20integration%20http-inbound\" rel=\"nofollow\">https://www.google.ie/webhp?sourceid=chrome-instant&amp;ion=1&amp;espv=2&amp;ie=UTF-8#q=spring%20integration%20http-inbound</a></p>\n"
+		}, {
+			"owner": {
+				"reputation": 703,
+				"user_id": 1585767,
+				"user_type": "registered",
+				"accept_rate": 55,
+				"profile_image": "https://www.gravatar.com/avatar/6c563c6b8247d907f6fad654da22218d?s=128&d=identicon&r=PG",
+				"display_name": "ESala",
+				"link": "http://stackoverflow.com/users/2597143/esala"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 14,
+			"is_accepted": false,
+			"score": 1,
+			"last_activity_date": 1445270411,
+			"creation_date": 1445270411,
+			"answer_id": 33218963,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>You can use Spring MVC for that.</p>\n\n<p>The <strong>M</strong>odel are your domain classes, the <strong>V</strong>iew is JSON in this case, and the <strong>C</strong>ontrollers handle the requests to perform logic operations, business as usual.</p>\n\n<p>You can also take advantage of Spring's <code>@RestController</code> annotation to quickly create your endpoints, like in this java example:</p>\n\n<pre><code>@RestController\npublic class MovieController {\n\n    @Autowired\n    private MovieRepository movieRepository;\n\n    @RequestMapping(value = \"/movies/{search}\", method = RequestMethod.GET)\n    public List&lt;Movie&gt; findMovies(@PathVariable String search) {\n        return movieRepository.findByName(search);\n    }\n\n    @RequestMapping(value = \"/movies\", method = RequestMethod.POST)\n    public void postMovie(@RequestBody Movie movie) {\n        movieRepository.save(movie);\n    }\n\n}\n</code></pre>\n"
+		}, {
+			"owner": {
+				"reputation": 8949,
+				"user_id": 2127357,
+				"user_type": "registered",
+				"accept_rate": 75,
+				"profile_image": "https://www.gravatar.com/avatar/f8a39724f9f2b32c305e7861b989c3d6?s=128&d=identicon&r=PG",
+				"display_name": "kervin",
+				"link": "http://stackoverflow.com/users/16549/kervin"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 2,
+			"is_accepted": false,
+			"score": 2,
+			"last_activity_date": 1445271042,
+			"last_edit_date": 1445271042,
+			"creation_date": 1445270705,
+			"answer_id": 33219052,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>As soon as you speak of <strong>receiving</strong> a POST request, you are automatically referring to a HTTP server.  </p>\n\n<p>The question is just whether that server is running as a service, or on-demand.</p>\n\n<blockquote>\n  <p>Is there a way you can point me to for using a Spring framework (or some other Java framework) to add the capability to recieve a POST requests to the existing offline application? </p>\n</blockquote>\n\n<p>Not without introducing some sort of HTTP container, no.</p>\n\n<blockquote>\n  <p>Or it will be better to just write the REST service that will use the same cache as the existing application?</p>\n</blockquote>\n\n<p>Yes, exactly.  And as another mentioned, personally I'd stick with Spring MVC.  But Jersey should also work very well for you for your usecase.</p>\n"
+		}, {
+			"owner": {
+				"reputation": 485,
+				"user_id": 2127357,
+				"user_type": "registered",
+				"accept_rate": 80,
+				"profile_image": "https://www.gravatar.com/avatar/24dc7ce8d2212d4c3aa5ca74eedfb382?s=128&d=identicon&r=PG",
+				"display_name": "drive235",
+				"link": "http://stackoverflow.com/users/2127357/drive235"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 20,
+			"is_accepted": false,
+			"score": 0,
+			"last_activity_date": 1446376075,
+			"creation_date": 1446376075,
+			"answer_id": 33461513,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>Answers from Andres, ESala and kervin pointed me to the right direction but the solution I found most suitable was:</p>\n\n<ul>\n<li>implementation of REST services using <strong>Spring MVC</strong> and</li>\n<li>transformation of the main process from the existing application to the <strong>Spring scheduled task</strong>.</li>\n</ul>\n"
+		}],
+		"tags": [
+			"java",
+			"rest",
+			"integration"
+		],
+		"owner": {
+			"reputation": 485,
+			"user_id": 2127357,
+			"user_type": "registered",
+			"accept_rate": 80,
+			"profile_image": "https://www.gravatar.com/avatar/24dc7ce8d2212d4c3aa5ca74eedfb382?s=128&d=identicon&r=PG",
+			"display_name": "drive235",
+			"link": "http://stackoverflow.com/users/2127357/drive235"
+		},
+		"is_answered": true,
+		"view_count": 61,
+		"down_vote_count": 1,
+		"up_vote_count": 37,
+		"answer_count": 4,
+		"score": 2,
+		"last_activity_date": 1446376075,
+		"creation_date": 1445269721,
+		"last_edit_date": 1445270486,
+		"question_id": 33218752,
+		"link": "http://stackoverflow.com/questions/33218752/java-web-service-architecture-with-rest",
+		"title": "Java web service architecture with REST",
+		"body": "<p>I am designing a Java web application that will be deployed to the Wildfly or Tomcat (not decided yet).</p>\n\n<p>Basically it's about the offline java application that needs a REST interface for communication (to accept JSON data). The idea is that application runs <strong>all the time</strong> and processes the requests stored in redis cache (where the received JSON data is stored).</p>\n\n<p>I used the Spring MVC framework for a web site in the past but I don't need the MVC pattern for the REST interface.</p>\n\n<p>Is there a way you can point me to for using a Spring framework (or some other Java framework) <strong>to add the capability to recieve a POST requests to the existing offline application</strong>? Or it will be better to just write <strong>the REST service that will use the same cache</strong> as the existing application?</p>\n\n<p>To illustrate my question I am attaching the simplified diagram of the architecture I am looking for:</p>\n\n<p><a href=\"http://i.stack.imgur.com/M49LG.png\" rel=\"nofollow\"><img src=\"http://i.stack.imgur.com/M49LG.png\" alt=\"Existing application and the extension\"></a></p>\n"
+	}, {
+		"tags": [
+			"java",
+			"calendar",
+			"vaadin"
+		],
+		"owner": {
+			"reputation": 1,
+			"user_id": 2127357,
+			"user_type": "registered",
+			"profile_image": "https://graph.facebook.com/100000507933870/picture?type=large",
+			"display_name": "Fado",
+			"link": "http://stackoverflow.com/users/3126943/fado"
+		},
+		"is_answered": false,
+		"view_count": 20,
+		"down_vote_count": 0,
+		"up_vote_count": 60,
+		"answer_count": 0,
+		"score": 0,
+		"last_activity_date": 1446375823,
+		"creation_date": 1446289628,
+		"last_edit_date": 1446375823,
+		"question_id": 33450848,
+		"link": "http://stackoverflow.com/questions/33450848/hiding-hours-axis-for-a-vaadin-calendar",
+		"title": "Hiding hours axis for a Vaadin calendar",
+		"body": "<p>I need to display more than one calendar in a view in a HorizentalLayout. And as the calendars are bonded to each other, I want to display the hours axis only for the first calendar from the left.</p>\n\n<p>Is-it possible ?</p>\n\n<p>Update : this is the current version of my code. It's quite simple and just create Calendars in a fixed loop... the code is in the constructor of my view</p>\n\n<pre><code>private List&lt;Calendar&gt; listOfCals = new ArrayList&lt;&gt;();\n\npublic PostageViewAsManyCalendars() {\n\n    root.setMargin(true);\n\n    int hour = 6;\n    for (int i = 0; i &lt; 10; i++) {\n        Calendar cal = new Calendar(\"My Calendar\");\n        cal.setWidth(\"150px\");\n        cal.setHeight(\"400px\");\n        listOfCals.add(cal);\n\n        cal.setStartDate(new GregorianCalendar(2012, 1, 14, 00, 00).getTime());\n        cal.setEndDate(new GregorianCalendar(2012, 1, 14, 23, 59).getTime());\n\n        // Use a container of built-in BasicEvents\n        final BeanItemContainer&lt;BasicEvent&gt; container = new BeanItemContainer&lt;BasicEvent&gt;(BasicEvent.class);\n\n        // Create a meeting in the container\n        container.addBean(\n                new BasicEvent(\"The Event\", \"Single Event\", new GregorianCalendar(2012, 1, 14, hour, 00).getTime(),\n                        new GregorianCalendar(2012, 1, hour + 3, 14, 00).getTime()));\n\n        // The container must be ordered by the start time. You\n        // have to sort the BIC every time after you have added\n        // or modified events.\n        container.sort(new Object[] { \"start\" }, new boolean[] { true });\n        cal.setContainerDataSource(container, \"caption\", \"description\", \"start\", \"end\", \"styleName\");\n\n        root.addComponent(cal);\n        hour++;\n    }\n\n    this.setCompositionRoot(root);\n}\n</code></pre>\n\n<p>Waht I want to hide is the axis hour as noticed bellow :</p>\n\n<p><a href=\"http://i.stack.imgur.com/8Ak8O.png\" rel=\"nofollow\">enter image description here</a>\nThanks in advance.</p>\n"
+	},
+    {
+		"answers": [{
+			"owner": {
+				"reputation": 416,
+				"user_id": 1230075,
+				"user_type": "registered",
+				"accept_rate": 79,
+				"profile_image": "https://i.stack.imgur.com/svyCO.jpg?s=128&g=1",
+				"display_name": "Franklin De Los Santos",
+				"link": "http://stackoverflow.com/users/1230075/franklin-de-los-santos"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 1,
+			"is_accepted": false,
+			"score": 1,
+			"last_activity_date": 1446397147,
+			"creation_date": 1446397147,
+			"answer_id": 33464711,
+			"question_id": 33398405,
+			"title": "Stream a video file over REST http with Spark Java",
+			"body": "<p>Here is the method that works. I will be uploading a solution that let's you skip to sections of the video as well, piece of cake ;)</p>\n\n<pre><code>  get(\"/post/:id\", (req, res ) -&gt; {\n        //what's the difference between these 2?\n        res.raw().setContentType(\"video/mp4\");\n        res.type(\"video/mp4\");\n\n        String id = req.params(\":id\");\n\n        ObjectId objectId = new ObjectId(id);\n        BasicDBObject query = new BasicDBObject();\n\n        query.put(\"_id\", objectId);\n        GridFS gridfile = new GridFS(db, \"videos\");\n        GridFSDBFile gridFSDBFile = gridfile.findOne(query);\n\n       res.raw().setContentLengthLong(gridFSDBFile.getLength());\n        InputStream inputStream = gridFSDBFile.getInputStream();\n\n       ServletOutputStream out = res.raw().getOutputStream();\n\n        int data = inputStream.read();\n        while (data &gt;= 0) {\n            gridFSDBFile.writeTo(out);\n            data = inputStream.read();\n        }\n\n       // out.flush();\n      out.close();\n\n       return 200;\n\n    });\n</code></pre>\n"
+		}],
+		"tags": [
+			"java",
+			"rest",
+			"jersey",
+			"mime-types",
+			"spark-java"
+		],
+		"owner": {
+			"reputation": 416,
+			"user_id": 1230075,
+			"user_type": "registered",
+			"accept_rate": 79,
+			"profile_image": "https://i.stack.imgur.com/svyCO.jpg?s=128&g=1",
+			"display_name": "Franklin De Los Santos",
+			"link": "http://stackoverflow.com/users/1230075/franklin-de-los-santos"
+		},
+		"is_answered": true,
+		"view_count": 29,
+		"down_vote_count": 0,
+		"up_vote_count": 2,
+		"answer_count": 1,
+		"score": 2,
+		"last_activity_date": 1446397688,
+		"creation_date": 1446055455,
+		"last_edit_date": 1446397688,
+		"question_id": 33398405,
+		"link": "http://stackoverflow.com/questions/33398405/stream-a-video-file-over-rest-http-with-spark-java",
+		"title": "Stream a video file over REST http with Spark Java",
+		"body": "<p>I'm trying to stream a video file over rest, I'm trying to implement something similar to Jersey like this:</p>\n\n<pre><code>ResponseBuilder builder = Response.ok(out.toByteArray());\n      builder.header(\"Content-Disposition\", \"attachment; filename=\" + fields.get(\"filename\"));\n      response = builder.build();\n    } else {\n      response = Response.status(404).\n          entity(\" Unable to get file with ID: \" + id).\n          type(\"text/plain\").\n          build();\n    }\n\n    return response;\n  }\n</code></pre>\n\n<p>Here is what I have for file upload and download/streaming(download semi-works, the file size is correct by corrupted):\nI really need help with this everyone, thanks</p>\n\n<p><strong>UPDATE</strong></p>\n\n<p>changed:</p>\n\n<pre><code>ByteArrayOutputStream out =  new ByteArrayOutputStream();\n</code></pre>\n\n<p>to:</p>\n\n<pre><code>ServletOutputStream out = res.raw().getOutputStream();\n</code></pre>\n\n<p><strong>UPDATE 2</strong>\nOk, I finally got it working, and the video plays in the browser, but now getting a Jetty io.EofException, I closed the stream but still, must be something simple.</p>\n\n<p>Below are both the before and after:</p>\n\n<p>and downloading the file from the browser works, but how can I stream it directly in the browser?</p>\n\n<p><strong>BEFORE(didn't work)</strong>\n    //download a video/ trying to stream it right in the browser if possible\n    get(\"/post/:id\", (req, res ) -> {</p>\n\n<pre><code>            res.raw().setContentType(\"application/octet-stream\");\n\n            String id = req.params(\":id\");\n\n            ObjectId objectId = new ObjectId(id);\n            BasicDBObject query = new BasicDBObject();\n\n            query.put(\"_id\", objectId);\n            //DBObject video = collection.findOne(query);\n\n            GridFS gridfile = new GridFS(db, \"videos\");\n            GridFSDBFile gridFSDBFile = gridfile.findOne(query);\n            res.raw().setHeader(\"Content-Disposition\", \"attachment; filename=\" + gridFSDBFile.getFilename());\n\n            InputStream inputStream = gridFSDBFile.getInputStream();\n\n             ServletOutputStream out = res.raw().getOutputStream();\n           // ByteArrayOutputStream out =  new ByteArrayOutputStream();\n            int data = inputStream.read();\n            while (data &gt;= 0) {\n                out.write((char) data);\n                data = inputStream.read();\n            }\n            out.flush();\n            out.close();\n            return out;\n        });\n</code></pre>\n\n<p>**AFTER (This works perfectly, but getting the end of file exception):</p>\n\n<pre><code>   get(\"/post/:id\", (req, res ) -&gt; {\n            //what's the difference between these 2?\n            res.raw().setContentType(\"video/mp4\");\n            res.type(\"video/mp4\");\n\n            String id = req.params(\":id\");\n\n            ObjectId objectId = new ObjectId(id);\n            BasicDBObject query = new BasicDBObject();\n\n            query.put(\"_id\", objectId);\n            GridFS gridfile = new GridFS(db, \"videos\");\n            GridFSDBFile gridFSDBFile = gridfile.findOne(query);\n\n           res.raw().setContentLengthLong(gridFSDBFile.getLength());\n            InputStream inputStream = gridFSDBFile.getInputStream();\n\n           ServletOutputStream out = res.raw().getOutputStream();\n\n            int data = inputStream.read();\n            while (data &gt;= 0) {\n                gridFSDBFile.writeTo(out);\n                data = inputStream.read();\n            }\n\n           // out.flush();\n          out.close();\n\n           return 200;\n\n        });\n</code></pre>\n\n<p>upload :</p>\n\n<pre><code> post(\"/postvideo/:username\", (req, res) -&gt; {\n            MultipartConfigElement multipartConfigElement =\n                    new MultipartConfigElement(\"/tmp\");\n            req.raw().\n                    setAttribute(\"org.eclipse.jetty.multipartConfig\",\n                            multipartConfigElement);\n            String username = req.params(\":username\");\n            double[] location =\n                    new double[2];\n            double lattitude =\n                    Double.parseDouble(req.queryParams(\"lat\"));\n            double longitude =\n                    Double.parseDouble(req.queryParams(\"lon\"));\n            location[0] = lattitude;\n            location[1] = longitude;\n\n            InputStream inputStream = req.raw().getPart(\"file\").getInputStream();;\n\n           Part uploadedFile = req.raw().getPart(\"file\");\n           // File file = new File(uploadedFile.getName());\n            GridFS gridFS = new GridFS(db, \"videos\");\n\n            GridFSInputFile gfsFile = gridFS.createFile(inputStream);\n\n            gfsFile.put(\"location\", location);\n            gfsFile.put(\"username\", username);\n            gfsFile.put(\"contentType\", req.raw().getContentType());\n            gfsFile.put(\"filename\", uploadedFile.getSubmittedFileName());\n            collection.insert(gfsFile);\n\n            gfsFile.save();\n            return 201;\n        });\n</code></pre>\n"
+	},
+    {
+		"answers": [{
+			"owner": {
+				"reputation": 46,
+				"user_id": 5417746,
+				"user_type": "registered",
+				"profile_image": "https://www.gravatar.com/avatar/812e30e159efdcdcdcd03d3f4d5216f0?s=128&d=identicon&r=PG&f=1",
+				"display_name": "J. Beck",
+				"link": "http://stackoverflow.com/users/5417746/j-beck"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 1,
+			"is_accepted": true,
+			"score": 1,
+			"last_activity_date": 1446388673,
+			"creation_date": 1446388673,
+			"answer_id": 33463315,
+			"question_id": 33452965,
+			"title": "Migrating from a single dropdown list spinner to a dependant spinner using mySQL data",
+			"body": "<p>From the way that <a href=\"http://developer.android.com/reference/android/widget/Spinner.html\" rel=\"nofollow\">Spinners</a> work, if you want to implement dependence between them, you will need to use the current selection of one (spinner1) as the key for the list source of the other (mySpinner). You should implement an <a href=\"http://developer.android.com/reference/android/widget/AdapterView.OnItemSelectedListener.html\" rel=\"nofollow\">AdapterView.OnItemSelectedListener</a> on spinner1 as recommended in the <a href=\"http://developer.android.com/guide/topics/ui/controls/spinner.html#SelectListener\" rel=\"nofollow\">Spinner guide</a> and set the list in mySpinner. See code below:</p>\n\n<pre><code>// Locate spinner1 in activity_main.xml\nSpinner spinner1 = (Spinner) findViewById(R.id.spinner1);\n\n// Locate mySpinner in activity_main.xml\nSpinner mySpinner = (Spinner) findViewById(R.id.my_spinner);\n\n// Spinner adapter\nList&lt;String&gt; typesofjobsunique = new ArrayList&lt;&gt;(new LinkedHashSet&lt;&gt;(typesofjobs)); \nspinner1.setAdapter(new ArrayAdapter&lt;String&gt;(MainActivity.this,\n        android.R.layout.simple_spinner_dropdown_item, typesofjobsunique));\n\nspinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){\n    public void onItemSelected(AdapterView&lt;?&gt; parent, View view, int pos, long id) {        \n        mySpinner\n                .setAdapter(new ArrayAdapter&lt;String&gt;(MainActivity.this,\n                        android.R.layout.simple_spinner_dropdown_item,\n                        Collections.sort(getWorldListForItem(parent.getItemAtPosition(pos)))));\n    }\n\n    public void onNothingSelected(AdapterView&lt;?&gt; parent) {\n        // Another interface callback\n    }\n});\n\nCollections.sort(typesofjobsunique);\n</code></pre>\n\n<p>The implementation for getWorldListForItem() should query your database in the desired way. A hash table could also be used.</p>\n\n<p>Hope that this is useful.</p>\n"
+		}],
+		"tags": [
+			"java",
+			"mysql",
+			"android-spinner"
+		],
+		"owner": {
+			"reputation": 47,
+			"user_id": 2527914,
+			"user_type": "registered",
+			"accept_rate": 100,
+			"profile_image": "https://i.stack.imgur.com/U0AAv.jpg?s=128&g=1",
+			"display_name": "David",
+			"link": "http://stackoverflow.com/users/2527914/david"
+		},
+		"is_answered": true,
+		"view_count": 22,
+		"down_vote_count": 0,
+		"up_vote_count": 0,
+		"accepted_answer_id": 33463315,
+		"answer_count": 1,
+		"score": 0,
+		"last_activity_date": 1446388673,
+		"creation_date": 1446303497,
+		"question_id": 33452965,
+		"link": "http://stackoverflow.com/questions/33452965/migrating-from-a-single-dropdown-list-spinner-to-a-dependant-spinner-using-mysql",
+		"title": "Migrating from a single dropdown list spinner to a dependant spinner using mySQL data",
+		"body": "<p>I have one spinner that populates with my SQL data. This works well. I now want to make it into a dependant spinner where the spinner I already have becomes the second or dependant spinner. I have added another spinner in my MainActivity.java. and it sucessfully retrieves the required mySQL data</p>\n\n<pre><code>  @Override\n    protected void onPostExecute(Void args) {\n        // Locate spinner1 in activity_main.xml\n        Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);\n\n        // Spinner adapter\n  List&lt;String&gt; typesofjobsunique = new ArrayList&lt;&gt;(new LinkedHashSet&lt;&gt;(typesofjobs)); \n        spinner1.setAdapter(new ArrayAdapter&lt;String&gt;(MainActivity.this,\n                android.R.layout.simple_spinner_dropdown_item, typesofjobsunique));\n\n        Collections.sort(typesofjobsunique);\n\n        // Locate my spinner in activity_main.xml\n        Spinner mySpinner = (Spinner) findViewById(R.id.my_spinner);\n\n        // Spinner adapter\n        mySpinner\n                .setAdapter(new ArrayAdapter&lt;String&gt;(MainActivity.this,\n                        android.R.layout.simple_spinner_dropdown_item,\n                        worldlist));\n\n        Collections.sort(worldlist);\n</code></pre>\n\n<p>What is the simplest coding approach to migrate from a single to a dependant spinner given the data retrieval itself works well for both spinners and I just want to make it dependant from the current independant format so </p>\n\n<p>spinner1  typesofjobsunique only displays the\nmySpinner worldlist \nspinner choices from mySQL corresponding to that particular typeofjobunique.</p>\n\n<p>Most of the questions on here relating to dependant spinners, are where the data is in strings.xml which is not very helpful with remote data.</p>\n\n<p>I'm assuming I will need to split my one adapter into two separate adapters, but I am unclear how to proceeed.</p>\n"
+	}]
+    }

@@ -1,0 +1,4 @@
+{
+	"title": "If immutable objects are good, why do people keep creating mutable objects?",
+	"body": "If immutable objects¹ are good, simple and offer benefits in concurrent programming why do programmers keep creating mutable objects? I have four years of experience in Java programming and as I see it, the first thing people do after creating a class is generate getters and setters in the IDE (thus making it mutable). Is there a lack of awareness or can we get away with using mutable objects in most scenarios? "
+	}

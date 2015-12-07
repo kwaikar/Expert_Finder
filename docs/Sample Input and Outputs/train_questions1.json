@@ -1,0 +1,312 @@
+{
+	"items": [{
+		"answers": [{
+			"owner": {
+				"reputation": 5287,
+				"user_id": 1585767,
+				"user_type": "registered",
+				"accept_rate": 81,
+				"profile_image": "https://i.stack.imgur.com/BZYwN.jpg?s=128&g=1",
+				"display_name": "Andres",
+				"link": "http://stackoverflow.com/users/1585767/andres"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 1,
+			"is_accepted": false,
+			"score": 1,
+			"last_activity_date": 1445270112,
+			"creation_date": 1445270112,
+			"answer_id": 33218853,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>I think you should use any light ESB, like Camel, Mule or Spring Integration. If you have already worked with Spring probably the latter will be the easiest for you.</p>\n\n<p>The purpose of this kind of apps is to facilitate the task of communicating anything with anything (on this case, an HTTP endpoint with your offline app).</p>\n\n<p>Take a look at this:</p>\n\n<p><a href=\"https://www.google.ie/webhp?sourceid=chrome-instant&amp;ion=1&amp;espv=2&amp;ie=UTF-8#q=spring%20integration%20http-inbound\" rel=\"nofollow\">https://www.google.ie/webhp?sourceid=chrome-instant&amp;ion=1&amp;espv=2&amp;ie=UTF-8#q=spring%20integration%20http-inbound</a></p>\n"
+		}, {
+			"owner": {
+				"reputation": 703,
+				"user_id": 2597143,
+				"user_type": "registered",
+				"accept_rate": 55,
+				"profile_image": "https://www.gravatar.com/avatar/6c563c6b8247d907f6fad654da22218d?s=128&d=identicon&r=PG",
+				"display_name": "ESala",
+				"link": "http://stackoverflow.com/users/2597143/esala"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 1,
+			"is_accepted": false,
+			"score": 1,
+			"last_activity_date": 1445270411,
+			"creation_date": 1445270411,
+			"answer_id": 33218963,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>You can use Spring MVC for that.</p>\n\n<p>The <strong>M</strong>odel are your domain classes, the <strong>V</strong>iew is JSON in this case, and the <strong>C</strong>ontrollers handle the requests to perform logic operations, business as usual.</p>\n\n<p>You can also take advantage of Spring's <code>@RestController</code> annotation to quickly create your endpoints, like in this java example:</p>\n\n<pre><code>@RestController\npublic class MovieController {\n\n    @Autowired\n    private MovieRepository movieRepository;\n\n    @RequestMapping(value = \"/movies/{search}\", method = RequestMethod.GET)\n    public List&lt;Movie&gt; findMovies(@PathVariable String search) {\n        return movieRepository.findByName(search);\n    }\n\n    @RequestMapping(value = \"/movies\", method = RequestMethod.POST)\n    public void postMovie(@RequestBody Movie movie) {\n        movieRepository.save(movie);\n    }\n\n}\n</code></pre>\n"
+		}, {
+			"owner": {
+				"reputation": 8949,
+				"user_id": 16549,
+				"user_type": "registered",
+				"accept_rate": 75,
+				"profile_image": "https://www.gravatar.com/avatar/f8a39724f9f2b32c305e7861b989c3d6?s=128&d=identicon&r=PG",
+				"display_name": "kervin",
+				"link": "http://stackoverflow.com/users/16549/kervin"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 2,
+			"is_accepted": false,
+			"score": 2,
+			"last_activity_date": 1445271042,
+			"last_edit_date": 1445271042,
+			"creation_date": 1445270705,
+			"answer_id": 33219052,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>As soon as you speak of <strong>receiving</strong> a POST request, you are automatically referring to a HTTP server.  </p>\n\n<p>The question is just whether that server is running as a service, or on-demand.</p>\n\n<blockquote>\n  <p>Is there a way you can point me to for using a Spring framework (or some other Java framework) to add the capability to recieve a POST requests to the existing offline application? </p>\n</blockquote>\n\n<p>Not without introducing some sort of HTTP container, no.</p>\n\n<blockquote>\n  <p>Or it will be better to just write the REST service that will use the same cache as the existing application?</p>\n</blockquote>\n\n<p>Yes, exactly.  And as another mentioned, personally I'd stick with Spring MVC.  But Jersey should also work very well for you for your usecase.</p>\n"
+		}, {
+			"owner": {
+				"reputation": 485,
+				"user_id": 2127357,
+				"user_type": "registered",
+				"accept_rate": 80,
+				"profile_image": "https://www.gravatar.com/avatar/24dc7ce8d2212d4c3aa5ca74eedfb382?s=128&d=identicon&r=PG",
+				"display_name": "drive235",
+				"link": "http://stackoverflow.com/users/2127357/drive235"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 0,
+			"is_accepted": false,
+			"score": 0,
+			"last_activity_date": 1446376075,
+			"creation_date": 1446376075,
+			"answer_id": 33461513,
+			"question_id": 33218752,
+			"title": "Java web service architecture with REST",
+			"body": "<p>Answers from Andres, ESala and kervin pointed me to the right direction but the solution I found most suitable was:</p>\n\n<ul>\n<li>implementation of REST services using <strong>Spring MVC</strong> and</li>\n<li>transformation of the main process from the existing application to the <strong>Spring scheduled task</strong>.</li>\n</ul>\n"
+		}],
+		"tags": [
+			"java",
+			"rest",
+			"integration"
+		],
+		"owner": {
+			"reputation": 485,
+			"user_id": 2127357,
+			"user_type": "registered",
+			"accept_rate": 80,
+			"profile_image": "https://www.gravatar.com/avatar/24dc7ce8d2212d4c3aa5ca74eedfb382?s=128&d=identicon&r=PG",
+			"display_name": "drive235",
+			"link": "http://stackoverflow.com/users/2127357/drive235"
+		},
+		"is_answered": true,
+		"view_count": 61,
+		"down_vote_count": 1,
+		"up_vote_count": 3,
+		"answer_count": 4,
+		"score": 2,
+		"last_activity_date": 1446376075,
+		"creation_date": 1445269721,
+		"last_edit_date": 1445270486,
+		"question_id": 33218752,
+		"link": "http://stackoverflow.com/questions/33218752/java-web-service-architecture-with-rest",
+		"title": "Java web service architecture with REST",
+		"body": "<p>I am designing a Java web application that will be deployed to the Wildfly or Tomcat (not decided yet).</p>\n\n<p>Basically it's about the offline java application that needs a REST interface for communication (to accept JSON data). The idea is that application runs <strong>all the time</strong> and processes the requests stored in redis cache (where the received JSON data is stored).</p>\n\n<p>I used the Spring MVC framework for a web site in the past but I don't need the MVC pattern for the REST interface.</p>\n\n<p>Is there a way you can point me to for using a Spring framework (or some other Java framework) <strong>to add the capability to recieve a POST requests to the existing offline application</strong>? Or it will be better to just write <strong>the REST service that will use the same cache</strong> as the existing application?</p>\n\n<p>To illustrate my question I am attaching the simplified diagram of the architecture I am looking for:</p>\n\n<p><a href=\"http://i.stack.imgur.com/M49LG.png\" rel=\"nofollow\"><img src=\"http://i.stack.imgur.com/M49LG.png\" alt=\"Existing application and the extension\"></a></p>\n"
+	}, {
+		"tags": [
+			"java",
+			"calendar",
+			"vaadin"
+		],
+		"owner": {
+			"reputation": 1,
+			"user_id": 3126943,
+			"user_type": "registered",
+			"profile_image": "https://graph.facebook.com/100000507933870/picture?type=large",
+			"display_name": "Fado",
+			"link": "http://stackoverflow.com/users/3126943/fado"
+		},
+		"is_answered": false,
+		"view_count": 20,
+		"down_vote_count": 0,
+		"up_vote_count": 0,
+		"answer_count": 0,
+		"score": 0,
+		"last_activity_date": 1446375823,
+		"creation_date": 1446289628,
+		"last_edit_date": 1446375823,
+		"question_id": 33450848,
+		"link": "http://stackoverflow.com/questions/33450848/hiding-hours-axis-for-a-vaadin-calendar",
+		"title": "Hiding hours axis for a Vaadin calendar",
+		"body": "<p>I need to display more than one calendar in a view in a HorizentalLayout. And as the calendars are bonded to each other, I want to display the hours axis only for the first calendar from the left.</p>\n\n<p>Is-it possible ?</p>\n\n<p>Update : this is the current version of my code. It's quite simple and just create Calendars in a fixed loop... the code is in the constructor of my view</p>\n\n<pre><code>private List&lt;Calendar&gt; listOfCals = new ArrayList&lt;&gt;();\n\npublic PostageViewAsManyCalendars() {\n\n    root.setMargin(true);\n\n    int hour = 6;\n    for (int i = 0; i &lt; 10; i++) {\n        Calendar cal = new Calendar(\"My Calendar\");\n        cal.setWidth(\"150px\");\n        cal.setHeight(\"400px\");\n        listOfCals.add(cal);\n\n        cal.setStartDate(new GregorianCalendar(2012, 1, 14, 00, 00).getTime());\n        cal.setEndDate(new GregorianCalendar(2012, 1, 14, 23, 59).getTime());\n\n        // Use a container of built-in BasicEvents\n        final BeanItemContainer&lt;BasicEvent&gt; container = new BeanItemContainer&lt;BasicEvent&gt;(BasicEvent.class);\n\n        // Create a meeting in the container\n        container.addBean(\n                new BasicEvent(\"The Event\", \"Single Event\", new GregorianCalendar(2012, 1, 14, hour, 00).getTime(),\n                        new GregorianCalendar(2012, 1, hour + 3, 14, 00).getTime()));\n\n        // The container must be ordered by the start time. You\n        // have to sort the BIC every time after you have added\n        // or modified events.\n        container.sort(new Object[] { \"start\" }, new boolean[] { true });\n        cal.setContainerDataSource(container, \"caption\", \"description\", \"start\", \"end\", \"styleName\");\n\n        root.addComponent(cal);\n        hour++;\n    }\n\n    this.setCompositionRoot(root);\n}\n</code></pre>\n\n<p>Waht I want to hide is the axis hour as noticed bellow :</p>\n\n<p><a href=\"http://i.stack.imgur.com/8Ak8O.png\" rel=\"nofollow\">enter image description here</a>\nThanks in advance.</p>\n"
+	},
+    {
+		"answers": [{
+			"owner": {
+				"reputation": 739,
+				"user_id": 1248436,
+				"user_type": "registered",
+				"accept_rate": 78,
+				"profile_image": "https://www.gravatar.com/avatar/120a039571e907a64bcfbafda75d472b?s=128&d=identicon&r=PG",
+				"display_name": "mtyurt",
+				"link": "http://stackoverflow.com/users/1248436/mtyurt"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 1,
+			"is_accepted": false,
+			"score": 1,
+			"last_activity_date": 1429270423,
+			"last_edit_date": 1429270423,
+			"creation_date": 1429269727,
+			"answer_id": 29697813,
+			"question_id": 29697543,
+			"title": "Registry key Error: Java version has value &#39;1.8&#39;, but &#39;1.7&#39; is required",
+			"body": "<p>First you should have Java 7. If you don't have, install it first (I don't know what you are using, Linux, Mac, yum, apt, homebrew, you should find out yourself.)</p>\n\n<p>If you already have Java 7, run:</p>\n\n<pre><code>echo $JAVA_HOME\n</code></pre>\n\n<p>Output should be something like this:<code>/usr/lib/jvm/java-8-oracle</code>. Near this directory, you should see <code>java-7</code> directory. After you found it, run </p>\n\n<pre><code>export JAVA_HOME=${java-7-dir}\n</code></pre>\n\n<p>Change <code>{java-7-dir}</code> with your directory path. Then you can run your command.</p>\n\n<p><strong>This is only a temporary solution.</strong> To change it permanently, put the above command to your <code>~/.bashrc</code> file.</p>\n\n<p><strong>EDIT: If you are using Windows</strong>, change environment variable of <code>JAVA_HOME</code> to your Java 7 installation directory path.</p>\n"
+		}, {
+			"owner": {
+				"reputation": 870,
+				"user_id": 1400755,
+				"user_type": "registered",
+				"accept_rate": 100,
+				"profile_image": "https://www.gravatar.com/avatar/cc542353654cd06ec9731422da99caf0?s=128&d=identicon&r=PG",
+				"display_name": "Anand Gupta",
+				"link": "http://stackoverflow.com/users/1400755/anand-gupta"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 6,
+			"is_accepted": true,
+			"score": 6,
+			"last_activity_date": 1429611414,
+			"creation_date": 1429611414,
+			"answer_id": 29769311,
+			"question_id": 29697543,
+			"title": "Registry key Error: Java version has value &#39;1.8&#39;, but &#39;1.7&#39; is required",
+			"body": "<p>After trying more than hundred of tricks, finally got success.</p>\n\n<p>I removed all <code>java.exe</code>, <code>javaw.exe</code> and <code>javaws.exe</code> from my</p>\n\n<ol>\n<li><p><code>Windows\\System32</code> and</p></li>\n<li><p><code>Windows\\SysWOW64</code> \nfolder. [Try step 2 if you have x64 system (Win 7 64 bits)]</p></li>\n</ol>\n"
+		}, {
+			"owner": {
+				"reputation": 1,
+				"user_id": 5317047,
+				"user_type": "registered",
+				"profile_image": "https://www.gravatar.com/avatar/49b712c3444d077fc55ca476176b505c?s=128&d=identicon&r=PG&f=1",
+				"display_name": "Undigo Factory",
+				"link": "http://stackoverflow.com/users/5317047/undigo-factory"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 0,
+			"is_accepted": false,
+			"score": 0,
+			"last_activity_date": 1441801810,
+			"creation_date": 1441801810,
+			"answer_id": 32479614,
+			"question_id": 29697543,
+			"title": "Registry key Error: Java version has value &#39;1.8&#39;, but &#39;1.7&#39; is required",
+			"body": "<p>My short contribution, for sharing the same problem with Talend Open Studio 64 bit version.</p>\n\n<ol>\n<li>Launch ..\\TOS_DI-Win32-20150702_1326-V6.0.0\\TOS_DI-win-x86_64.exe manually (not link an startup Windows menu)</li>\n<li>and this registry error message appears</li>\n</ol>\n\n<p>To resolve this, remove all java.exe, javaw.exe and javaws.exe files on c:\\ProgramData\\Oracle\\Java\\javapath\\</p>\n\n<p>and TOS start with 64 bits version correctly !</p>\n"
+		}, {
+			"owner": {
+				"reputation": 8,
+				"user_id": 4490644,
+				"user_type": "registered",
+				"profile_image": "https://graph.facebook.com/618195938/picture?type=large",
+				"display_name": "Raj",
+				"link": "http://stackoverflow.com/users/4490644/raj"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 0,
+			"is_accepted": false,
+			"score": 0,
+			"last_activity_date": 1446375539,
+			"creation_date": 1446375539,
+			"answer_id": 33461449,
+			"question_id": 29697543,
+			"title": "Registry key Error: Java version has value &#39;1.8&#39;, but &#39;1.7&#39; is required",
+			"body": "<p>My experience: </p>\n\n<p>I am using windows <strong>8.1</strong> and i have downgraded JAVA version from 1.8 to 1.7 and i was getting the same error.</p>\n\n<p><strong>Error: Registry key 'Software\\JavaSoft\\Ja has value '1.7', but '1.8' is required.</strong></p>\n\n<p>I have deleted <strong>java.exe</strong>, <strong>javaw.exe</strong> and <strong>javaws.ex</strong>e from <strong>C:\\Windows\\System32</strong> folder and it worked for me.</p>\n"
+		}],
+		"tags": [
+			"java",
+			"java-8",
+			"sencha-touch",
+			"sencha-touch-2",
+			"sencha-cmd"
+		],
+		"owner": {
+			"reputation": 870,
+			"user_id": 1400755,
+			"user_type": "registered",
+			"accept_rate": 100,
+			"profile_image": "https://www.gravatar.com/avatar/cc542353654cd06ec9731422da99caf0?s=128&d=identicon&r=PG",
+			"display_name": "Anand Gupta",
+			"link": "http://stackoverflow.com/users/1400755/anand-gupta"
+		},
+		"is_answered": true,
+		"view_count": 3290,
+		"down_vote_count": 0,
+		"up_vote_count": 2,
+		"accepted_answer_id": 29769311,
+		"answer_count": 4,
+		"score": 2,
+		"last_activity_date": 1446375539,
+		"creation_date": 1429268924,
+		"last_edit_date": 1445509525,
+		"question_id": 29697543,
+		"link": "http://stackoverflow.com/questions/29697543/registry-key-error-java-version-has-value-1-8-but-1-7-is-required",
+		"title": "Registry key Error: Java version has value &#39;1.8&#39;, but &#39;1.7&#39; is required",
+		"body": "<p>While running </p>\n\n<pre><code>sencha app build production\n</code></pre>\n\n<p>I am getting the following error:</p>\n\n<blockquote>\n  <p>Error: Registry key 'Software\\JavaSoft\\Java Runtime\n  Environment'\\CurrentVersion'</p>\n  \n  <p>has value '1.8', but '1.7' is required. Error: could not find java.dll\n  Error: Could not find Java SE Runtime Environment.</p>\n</blockquote>\n\n<p><code>java -version</code> , command is showing following:</p>\n\n<p>java version \"1.8.0_40\"\nJava(TM) SE Runtime Environment (build 1.8.0_40-b26)\nJava HotSpot(TM) 64-Bit Server VM (build 25.40-b25, mixed mode)</p>\n\n<p>Not able to find where path is going wrong. Any idea?</p>\n\n<p>----------------------- EDIT ------------------------------------------------</p>\n\n<p><strong>Note</strong>: I am using Windows 7 (64 bit). </p>\n\n<p>I have tried uninstalling the sencha touch cmd and reinstalling. But still same error.</p>\n\n<p>I have uninstalled all the java version instances and reinstalled the latest one, Still the problem persist.</p>\n"
+	},
+    {
+		"answers": [{
+			"owner": {
+				"reputation": 17244,
+				"user_id": 608820,
+				"user_type": "registered",
+				"accept_rate": 89,
+				"profile_image": "https://www.gravatar.com/avatar/552f1f66b3a06095d838af3c175e9ff9?s=128&d=identicon&r=PG",
+				"display_name": "Augusto",
+				"link": "http://stackoverflow.com/users/608820/augusto"
+			},
+			"tags": [],
+			"down_vote_count": 0,
+			"up_vote_count": 0,
+			"is_accepted": true,
+			"score": 0,
+			"last_activity_date": 1446374558,
+			"last_edit_date": 1446374558,
+			"creation_date": 1446319724,
+			"answer_id": 33455698,
+			"question_id": 33455460,
+			"title": "Gain of implement our Spring event listener",
+			"body": "<p>As you mentioned this approach lowers the coupling between classes as the sender or receiver of the event don't know about each other.</p>\n\n<p>Just in case, it's not ideal to use this approach for <em>all</em> method invocations, but it makes a lot of sense when the operations are not really related. </p>\n\n<p>For example, imagine the following scenario: <em>When a user completes his registration, we'll send him/her a welcome email</em>.</p>\n\n<p>In this case, coupling the registration process to sending the email is not great. But if you have a listener on the <em>UserRegistered</em> event, then the email can be triggered out of that event. I really like this way of build applications as it makes them more decoupled, but, depending what event dispatcher you use, it becomes more difficult to understand the flow (e.g. if the event dispatcher receives a string as the event name and a map with the data, then is difficult to easily get a list of all consumers).</p>\n\n<p>One important aspect (or I should say smell) is that 2 listeners that are listening for the same event shouldn't depend on the order they consume the event. This applies to all event dispatchers, not just the one implemented by Spring.</p>\n"
+		}],
+		"tags": [
+			"java",
+			"spring",
+			"events",
+			"listener"
+		],
+		"owner": {
+			"reputation": 3,
+			"user_id": 5004310,
+			"user_type": "registered",
+			"profile_image": "https://i.stack.imgur.com/HZNUJ.jpg?s=128&g=1",
+			"display_name": "Chrisitian Tejada Pacheco",
+			"link": "http://stackoverflow.com/users/5004310/chrisitian-tejada-pacheco"
+		},
+		"is_answered": true,
+		"view_count": 10,
+		"down_vote_count": 1,
+		"up_vote_count": 0,
+		"accepted_answer_id": 33455698,
+		"answer_count": 1,
+		"score": -1,
+		"last_activity_date": 1446374558,
+		"creation_date": 1446318331,
+		"question_id": 33455460,
+		"link": "http://stackoverflow.com/questions/33455460/gain-of-implement-our-spring-event-listener",
+		"title": "Gain of implement our Spring event listener",
+		"body": "<p>Studying about Spring event handlers i cannot see what is the gain ou benefits of implement our event listener, I mean, What is the difference in Object A calling object B directly synchronously ou Object A, using one Listener and one EventHandler, publishing and then the Object B be called. may be is about some architecture gain or to get low coupling ? which is the real gain? tks.</p>\n"
+	}]
+    }
