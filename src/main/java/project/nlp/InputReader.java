@@ -371,6 +371,7 @@ public class InputReader {
 	public List<String> searchIndex(Question question) throws Exception {
 		IndexAndSearch indexer = getIndexerAndSearcher();
 		List<OntologyNode> questionOntology = extractQuestionOntology(question);
+		System.out.println("Ontology found in the question {"+questionOntology+"}");
 		List<String> userIds = indexer.searchIndex(questionOntology);
 		indexer.closeIndexWriter();
 		return userIds;

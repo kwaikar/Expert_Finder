@@ -63,24 +63,22 @@ public class TaggerUtil {
 			List<TaggedWord> taggedSent = tagger.tagSentence(sent);
 			String previousNoun = null;
 			for (TaggedWord tw : taggedSent) {
-				if (StringUtils.isNotBlank(tw.word())) {
+				String word = tw.word().replaceAll("[^\\dA-Za-z ]", "");
+				if (StringUtils.isNotBlank(word)) {
 					if (tw.tag().startsWith("NN")) {
 						if (previousNoun != null) {
 							entities.remove(previousNoun);
-							previousNoun = previousNoun + " " + tw.word();
+							previousNoun = previousNoun + " " + word;
 							if (!stopWords.contains(previousNoun.trim().toLowerCase().replaceAll("[:,//?]", ""))
-									&& (!stopWords.contains(tw.word().trim().toLowerCase()))) {
-
+									&& (!stopWords.contains(word.trim().toLowerCase()))) {
 								entities.add(previousNoun);
 							}
-
 						} else {
-							if (!stopWords.contains(tw.word().toLowerCase()) && tw.word().trim().length() > 1) {
-
-								entities.add(tw.word());
-								previousNoun = tw.word();
+							if (!stopWords.contains(word.toLowerCase()) && word.trim().length() > 1) {
+								entities.add(word);
+								previousNoun = word;
 							} else {
-								previousNoun = "";
+								previousNoun = null;
 							}
 						}
 					} else {

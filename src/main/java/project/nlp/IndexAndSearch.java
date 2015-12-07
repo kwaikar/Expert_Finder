@@ -151,7 +151,7 @@ public class IndexAndSearch {
 			for (OntologyNode ontologyNode : skills) {
 				
 				if(ontologyNode.getEntity().trim().length()>1){
-				sb.append((sb.toString().length() == 0 ? " " : " OR ") + ontologyNode.getEntity().toLowerCase().replaceAll("[^\\dA-Za-z ]", ""));
+				sb.append((sb.toString().length() == 0 ? " " : " OR ") + ontologyNode.getEntity().toLowerCase());
 				}
 			}
 			System.out.println("Primary Skill Set identified: " + sb.toString());
