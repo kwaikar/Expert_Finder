@@ -140,7 +140,7 @@ public class IndexAndSearch {
 	 * @throws IOException
 	 */
 	public List<String> searchIndex(List<OntologyNode> skills) throws IOException {
-		int hitsPerPage = 10;
+		int hitsPerPage = 1;
 		Query query = null;
 
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(indexPath));
@@ -170,7 +170,7 @@ public class IndexAndSearch {
 
 			@Override
 			public float tf(float freq) {
-				// TODO Auto-generated method stub
+				//Return freq instead of sqrt(freq)
 				return freq;
 			}
 
