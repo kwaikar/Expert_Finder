@@ -161,7 +161,7 @@ public class IndexAndSearch {
 		Similarity sim = new DefaultSimilarity() {
 			@Override
 			public float idf(long docFreq, long numDocs) {
-				// TODO Auto-generated method stub
+				//common terms are less important than uncommon ones
 				return 1;
 			}
 
@@ -173,13 +173,13 @@ public class IndexAndSearch {
 
 			@Override
 			public float queryNorm(float sumOfSquaredWeights) {
-				// TODO Auto-generated method stub
+				// a term matched in fields with less terms have a higher score
 				return 1;
 			}
 
 			@Override
 			public float coord(int overlap, int maxOverlap) {
-				// TODO Auto-generated method stub
+				// of the terms in the query, a document that contains more terms will have a higher score
 				return super.coord(overlap, maxOverlap) * 100;
 			}
 		};

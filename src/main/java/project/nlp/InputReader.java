@@ -99,7 +99,7 @@ public class InputReader {
 	 * @param fileName
 	 * @throws Exception
 	 */
-	public void readStackOverFlowJsonAndLoadIndex(String fileName) throws Exception {
+	public void expertiseExtractor(String fileName) throws Exception {
 
 		ObjectMapper mapper = new ObjectMapper();
 		// if (!new File("S:/nlp/index").exists()) {
@@ -239,7 +239,7 @@ public class InputReader {
 	 * @param expertUserEntry
 	 * @param answeredOntology
 	 */
-	public ExpertUser incrementWeightForIdentifiedSkill(double BEST_ANSWER_WEIGHT, ExpertUser expertUserEntry,
+	private ExpertUser incrementWeightForIdentifiedSkill(double BEST_ANSWER_WEIGHT, ExpertUser expertUserEntry,
 			String skill) {
 
 		UserExpertise expertise = (!topSkills.contains(skill.toLowerCase().trim()))
@@ -336,7 +336,7 @@ public class InputReader {
 	public static void main(String[] args) throws Exception {
 
 		InputReader ir = new InputReader();
-		ir.readStackOverFlowJsonAndLoadIndex("/resources/questions_smaller_subset.json");
+		ir.expertiseExtractor("/resources/questions_smaller_subset.json");
 	}
 
 	/**
@@ -361,7 +361,13 @@ public class InputReader {
 		indexer.closeIndexWriter();
 
 	}
-
+	
+	/**
+	 * This method accepts a Question object and returns set of user Ids it finds relevant and matching.
+	 * @param question
+	 * @return
+	 * @throws Exception
+	 */
 	public List<String> searchIndex(Question question) throws Exception {
 		IndexAndSearch indexer = getIndexerAndSearcher();
 		List<OntologyNode> questionOntology = extractQuestionOntology(question);
