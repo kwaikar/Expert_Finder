@@ -3,6 +3,7 @@ package project.nlp;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -139,7 +140,7 @@ public class IndexAndSearch {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> searchIndex(List<OntologyNode> skills,int numResults) throws IOException {
+	public List<String> searchIndex(List<OntologyNode> skills, int numResults) throws IOException {
 		Query query = null;
 
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(indexPath));
@@ -147,29 +148,30 @@ public class IndexAndSearch {
 
 		try {
 			StringBuilder sb = new StringBuilder();
+			List<String> skillsToBeSearched = new ArrayList<String>();
 			for (OntologyNode ontologyNode : skills) {
-				
-				if(ontologyNode.getEntity().trim().length()>1){
-				sb.append((sb.toString().length() == 0 ? " " : " OR ") + ontologyNode.getEntity().toLowerCase());
+
+				if (ontologyNode.getEntity().trim().length() > 1) {
+					sb.append((sb.toString().length() == 0 ? " " : " OR ") + ontologyNode.getEntity().toLowerCase());
+					skillsToBeSearched.add(ontologyNode.getEntity());
 				}
 			}
-			System.out.println("Primary Skill Set identified: " + sb.toString());
-			String queryStr =  "skill:" + sb.toString() + " OR (topSkill:" + sb.toString()+ ")^50" ;
+			System.out.println("Primary Skill Set identified: " + skillsToBeSearched);
+			String queryStr = "skill:" + sb.toString() + " OR (topSkill:" + sb.toString() + ")^50";
 			query = new QueryParser("skill", analyzer).parse(queryStr /* "wildfly and rest" */);
-			System.out.println("==>" + query);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		Similarity sim = new DefaultSimilarity() {
 			@Override
 			public float idf(long docFreq, long numDocs) {
-				//common terms are less important than uncommon ones
+				// common terms are less important than uncommon ones
 				return 1;
 			}
 
 			@Override
 			public float tf(float freq) {
-				//Return freq instead of sqrt(freq)
+				// Return freq instead of sqrt(freq)
 				return freq;
 			}
 
@@ -181,13 +183,13 @@ public class IndexAndSearch {
 
 			@Override
 			public float coord(int overlap, int maxOverlap) {
-				// of the terms in the query, a document that contains more terms will have a higher score
+				// of the terms in the query, a document that contains more
+				// terms will have a higher score
 				return super.coord(overlap, maxOverlap) * 100;
 			}
 		};
 		searcher.setSimilarity(sim);
-		System.out.println(searcher.getDefaultSimilarity());
-		TopDocs results = searcher.search(query,  numResults);
+		TopDocs results = searcher.search(query, numResults);
 		ScoreDoc[] hits = results.scoreDocs;
 		System.out.println("Found " + hits.length + " hits.");
 		List<String> docs = new LinkedList<String>();

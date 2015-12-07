@@ -32,7 +32,7 @@ public class UserExpertise {
 	 */
 	@Override
 	public String toString() {
-		return "UserExpertise [skill=" + skill + ", weight=" + weight + "]";
+		return skill+":["+ weight+"]";
 	}
 	
 	

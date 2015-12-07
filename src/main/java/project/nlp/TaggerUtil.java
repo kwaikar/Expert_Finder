@@ -1,12 +1,14 @@
 package project.nlp;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.stanford.nlp.ling.HasWord;
@@ -32,17 +34,17 @@ public class TaggerUtil {
 	public TaggerUtil() {
 		super();
 		try {
-			tagger = new MaxentTagger(this.getClass()
-					.getResource("/resources/POS_Tagged_Model/english-bidirectional-distsim.tagger").getFile());
-
-			stopWords = new HashSet<String>();
-			String stopWordString = FileUtils
-					.readFileToString(new File(this.getClass().getResource("/resources/stopWords.txt").getFile()));
+			InputStream ioStream = getClass().getClassLoader().getResourceAsStream("resources/stopWords.txt");
+			String stopWordString = IOUtils.toString(ioStream);
+			stopWords = new HashSet<String>(); 
 			for (String word : stopWordString.split("[\r|\n]")) {
 				if (word.trim().length() > 1) {
 					stopWords.add(word.trim().toLowerCase());
 				}
 			}
+			tagger = new MaxentTagger(this.getClass()
+					.getResource("/resources/POS_Tagged_Model/english-bidirectional-distsim.tagger").getFile());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

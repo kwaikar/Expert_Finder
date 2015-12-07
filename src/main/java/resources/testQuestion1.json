@@ -1,4 +1,4 @@
 {
-	"title": "Immutability vs state change in a class",
-	"body": "I'm trying to understand how this class could be changed to an immutable one.In particular, I don't see how the boolean field isConnected could be made final, since it represents the connection state.All clients of ConnectionMonitor should just query  isConnected() to get the connection state. I'm aware that locking changes to isConnected is possible or using an atomic boolean. But I don't see how to rewrite this to an immutable class."
+	"title": "Immutability vs state change in a class especially in CORS",
+	"body": "I am trying to use CORS in order to remove the cross domain issue that I have been facing with respect to making a remote call using angularJS. Can you please help me out?"
 	}

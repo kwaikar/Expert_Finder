@@ -44,7 +44,7 @@ public class InputReader {
 	double BEST_ANSWERTAG_WEIGHT = 20;
 	double NORMALIZED_UPVOTE_WEIGHT = 1.5;
 	double NORMALIZED_DOWNVOTE_WEIGHT = -1.5;
-	
+
 	private static TaggerUtil tagger = null;
 
 	Set<String> topSkills = new HashSet<String>();
@@ -104,18 +104,13 @@ public class InputReader {
 		ObjectMapper mapper = new ObjectMapper();
 		// if (!new File("S:/nlp/index").exists()) {
 		IndexAndSearch indexer = getIndexerAndSearcher();
+		System.out.println("--------------------------------------------------------------------------------------------------------");
+		System.out.println("Initializing Extraction of Experts and their Expertise.....");
 
 		Map<String, ExpertUser> expertUsers = new HashMap<String, ExpertUser>();
-		List<String> fileNames = new ArrayList<String>();
-		fileNames.add(fileName);
-		/*
-		 * for (int i = 1; i < 11; i++) {
-		 * fileNames.add("/resources/Production_Data/question_" + i + ".json");
-		 * }
-		 */
-		for (int i = 0; i < fileNames.size(); i++) {
+		 
 
-			File inputQuestionAnswersData = new File(this.getClass().getResource(fileNames.get(i)).getFile());
+			File inputQuestionAnswersData = new File(fileName);
 			Items items = mapper.readValue(inputQuestionAnswersData, Items.class);
 			for (QuestionDetails question : items.getItems()) {
 
@@ -165,9 +160,7 @@ public class InputReader {
 					}
 					answer = null;
 				}
-			}
 		}
-		System.out.println("Map Received-->" + expertUsers);
 
 		for (ExpertUser expertUserEntry : expertUsers.values()) {
 			for (AnswerUserList entry : expertUserEntry.getAnswerUserList()) {
@@ -199,7 +192,7 @@ public class InputReader {
 							* ((double) entry.getNoOfDownvotes() / entry.getThreadmaxDownvoteCount())
 							* answeredOntology.getFrequency(), expertUserEntry, answeredOntology.getEntity());
 				}
-				System.out.println("-->" + expertUserEntry.getUserExpertise());
+				System.out.println(expertUserEntry.getOwner().getUserId()+"-->" + expertUserEntry.getUserExpertise().values());
 			}
 
 			// Since all the answers have been iterated and ontology has
@@ -211,10 +204,9 @@ public class InputReader {
 		for (ExpertUser entry : expertUsers.values()) {
 			indexer.indexDoc(entry);
 		}
-		System.out.println(expertUsers);
 		indexer.closeIndexWriter();
 		ObjectMapper obj = new ObjectMapper();
-		File outputJsonFileName = new File(("/resources/UserExpertiseTest.json"));
+		File outputJsonFileName = new File(("UserExpertiseTest.json"));
 		System.out.println("Filename->" + outputJsonFileName.getAbsolutePath());
 		FileUtils.writeStringToFile((outputJsonFileName), obj.writeValueAsString(expertUsers.values()));
 
@@ -335,8 +327,54 @@ public class InputReader {
 
 	public static void main(String[] args) throws Exception {
 
-		InputReader ir = new InputReader();
-		ir.expertiseExtractor("/resources/questions_smaller_subset.json");
+		System.out.println("--------------------------------------------------------------------------------------------------------");
+		String filePath = System.console().readLine("Please provide complete Path of Json for Indexing : ");
+		File jsonFile = new File(filePath);
+		while (!jsonFile.exists() || jsonFile.isDirectory()) {
+			System.out.println("--------------------------------------------------------------------------------------------------------");
+			System.out.println("Please check filepath - Please make sure your provide complete path of Questions : ");
+		}  
+			InputReader ir = new InputReader();
+			ir.expertiseExtractor(jsonFile.getAbsolutePath());
+
+			int selectedEntry = 0;
+			try {
+				System.out.println("--------------------------------------------------------------------------------------------------------");
+				selectedEntry = Integer.parseInt(System.console()
+						.readLine("Please select 2 for providing Path to the Question JSON, 3 to exit: ").trim());
+			} catch (Exception e) {
+				e.printStackTrace();
+				try {
+
+					System.out.println("--------------------------------------------------------------------------------------------------------");
+					selectedEntry = Integer.parseInt(System.console()
+							.readLine(
+									" Invalid Choice. Please select 2 for providing Path to the Question JSON, 3 to exit: ")
+							.trim());
+				} catch (Exception ee) {
+					ee.printStackTrace();
+				}
+			}
+			if (selectedEntry == 2) {
+				ObjectMapper mapper = new ObjectMapper();
+				String questionFilePath = System.console().readLine("Please provide complete Path of Question Json: ");
+				File questionJsonFile = new File(questionFilePath);
+				while (!questionJsonFile.exists() || questionJsonFile.isDirectory()) {
+					System.out.println(
+							"Please check filepath - Please make sure your provide complete path of Questions : ");
+					questionFilePath = System.console().readLine("Please provide complete Path of Question Json: ");
+				}
+				File questions = new File(questionFilePath);
+				SimpleQuestion question = mapper.readValue(questions, SimpleQuestion.class);
+				List<String> ids =ir.searchIndex(question, 5);
+				if(ids.size()==0)
+				{
+					System.out.println("System does not has information about the user with matching skillset");
+				}
+			} else if (selectedEntry == 3) {
+				System.exit(0);
+			}
+
 	}
 
 	/**
@@ -361,9 +399,11 @@ public class InputReader {
 		indexer.closeIndexWriter();
 
 	}
-	
+
 	/**
-	 * This method accepts a Question object and returns set of user Ids it finds relevant and matching.
+	 * This method accepts a Question object and returns set of user Ids it
+	 * finds relevant and matching.
+	 * 
 	 * @param question
 	 * @param numResults
 	 * @return
@@ -372,8 +412,8 @@ public class InputReader {
 	public List<String> searchIndex(Question question, int numResults) throws Exception {
 		IndexAndSearch indexer = getIndexerAndSearcher();
 		List<OntologyNode> questionOntology = extractQuestionOntology(question);
-		System.out.println("Ontology found in the question {"+questionOntology+"}");
-		List<String> userIds = indexer.searchIndex(questionOntology,numResults);
+		System.out.println("Ontology found in the question {" + questionOntology + "}");
+		List<String> userIds = indexer.searchIndex(questionOntology, numResults);
 		indexer.closeIndexWriter();
 		return userIds;
 	}
