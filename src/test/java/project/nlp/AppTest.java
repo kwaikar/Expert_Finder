@@ -24,13 +24,13 @@ public class AppTest extends TestCase {
 		File questions = new File(ir.getClass().getResource("/resources/inputQuestion.json").getFile());
 		SimpleQuestion question = mapper.readValue(questions, SimpleQuestion.class);
 		List<String> userIds =ir.searchIndex(question);
-		Assert.assertEquals(userIds.get(0), "16549");
+		Assert.assertEquals(userIds.get(0), "1400755");
 		
 		Owner owner =ir.getBaseLineUser("/resources/questions_smaller_subset.json","/resources/inputQuestion.json");
 		System.out.println("Owner found" + (owner!=null?owner:"Sorry nobody knows anything about it :( "));
 		
 
-		  questions = new File(ir.getClass().getResource("/resources/testQuestion1.json").getFile());
+		  questions = new File(ir.getClass().getResource("/resources/dosQuestion.json").getFile());
 		  question = mapper.readValue(questions, SimpleQuestion.class);
 		 userIds =ir.searchIndex(question);
 		 System.out.println(userIds);

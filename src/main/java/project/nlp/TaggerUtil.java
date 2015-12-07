@@ -24,7 +24,8 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 public class TaggerUtil {
 
 	MaxentTagger tagger = null;
-Set<String> stopWords = null;
+	Set<String> stopWords = null;
+
 	/**
 	 * Load the Trained model in the memory.
 	 */
@@ -33,12 +34,12 @@ Set<String> stopWords = null;
 		try {
 			tagger = new MaxentTagger(this.getClass()
 					.getResource("/resources/POS_Tagged_Model/english-bidirectional-distsim.tagger").getFile());
-			
-			stopWords =new HashSet<String>();
-			String stopWordString = FileUtils.readFileToString(new File(this.getClass().getResource("/resources/stopWords.txt").getFile()));
+
+			stopWords = new HashSet<String>();
+			String stopWordString = FileUtils
+					.readFileToString(new File(this.getClass().getResource("/resources/stopWords.txt").getFile()));
 			for (String word : stopWordString.split("[\r|\n]")) {
-				if(word.trim().length()>1)
-				{
+				if (word.trim().length() > 1) {
 					stopWords.add(word.trim().toLowerCase());
 				}
 			}
@@ -57,32 +58,29 @@ Set<String> stopWords = null;
 	public List<String> extractNounEntities(String sentences) {
 		List<String> entities = new ArrayList<String>();
 		String[] sentencesArr = sentences.split("[.?!]");
-
 		for (String sentence : sentencesArr) {
-
 			List<HasWord> sent = Sentence.toWordList(sentence.split(" "));
 			List<TaggedWord> taggedSent = tagger.tagSentence(sent);
 			String previousNoun = null;
 			for (TaggedWord tw : taggedSent) {
 				if (StringUtils.isNotBlank(tw.word())) {
-					if (tw.tag().startsWith("NN") ) {
+					if (tw.tag().startsWith("NN")) {
 						if (previousNoun != null) {
 							entities.remove(previousNoun);
 							previousNoun = previousNoun + " " + tw.word();
-							if(!stopWords.contains(previousNoun.trim().toLowerCase().replaceAll("[:,//?]","")) && (!stopWords.contains(tw.word().trim().toLowerCase())))
-							{
-								entities.add(previousNoun);	
+							if (!stopWords.contains(previousNoun.trim().toLowerCase().replaceAll("[:,//?]", ""))
+									&& (!stopWords.contains(tw.word().trim().toLowerCase()))) {
+
+								entities.add(previousNoun);
 							}
-							
+
 						} else {
-							if(!stopWords.contains(tw.word().toLowerCase()))
-							{
-							entities.add(tw.word());
-							previousNoun = tw.word();
-							}
-							else
-							{
-								previousNoun="";
+							if (!stopWords.contains(tw.word().toLowerCase()) && tw.word().trim().length() > 1) {
+
+								entities.add(tw.word());
+								previousNoun = tw.word();
+							} else {
+								previousNoun = "";
 							}
 						}
 					} else {
@@ -90,8 +88,8 @@ Set<String> stopWords = null;
 					}
 				}
 			}
-		} 
+		}
 		return entities;
 	}
- 
+
 }
