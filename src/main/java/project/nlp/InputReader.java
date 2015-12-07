@@ -31,13 +31,20 @@ import project.nlp.beans.SimpleQuestion;
 import project.nlp.beans.UserExpertise;
 
 /**
- * This class Reads Stack overflow data files and exposes methods that return the Most skillful users who can answer the question based on their answering history on stackoverflow!
+ * This class Reads Stack overflow data files and exposes methods that return
+ * the Most skillful users who can answer the question based on their answering
+ * history on stackoverflow!
  *
  */
 public class InputReader {
 	private static String url = "https://api.stackexchange.com/2.2/search?page=8&pagesize=100&order=desc&sort=activity&tagged=java&nottagged=android&site=stackoverflow";
 	private static String answers = "https://api.stackexchange.com/2.2/answers/33452399/?order=desc&sort=activity&site=stackoverflow&filter=withbody";
 
+	double BEST_ANSWER_WEIGHT = 10;
+	double BEST_ANSWERTAG_WEIGHT = 20;
+	double NORMALIZED_UPVOTE_WEIGHT = 1.5;
+	double NORMALIZED_DOWNVOTE_WEIGHT = -1.5;
+	
 	private static TaggerUtil tagger = null;
 
 	Set<String> topSkills = new HashSet<String>();
@@ -47,13 +54,16 @@ public class InputReader {
 	}
 
 	/**
-	 * This method returns the Baseline user. It first parses and extracts ontology from the question and returns the user who has knowledge about the topic
+	 * This method returns the Baseline user. It first parses and extracts
+	 * ontology from the question and returns the user who has knowledge about
+	 * the topic
+	 * 
 	 * @param fileName
 	 * @param inputQuestion
 	 * @return
 	 * @throws Exception
 	 */
-	public Owner getBaseLineUser(String fileName,   String inputQuestion) throws Exception {
+	public Owner getBaseLineUser(String fileName, String inputQuestion) throws Exception {
 
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -72,9 +82,9 @@ public class InputReader {
 					if (answer.getBody().contains(string)) {
 						count++;
 					}
-					if(count==(nodes.size()-1))
-					{
-						System.out.println("Found User who answered question on the topic "+answer.getOwner().getUserId()+ "->"+singleQuestion.getLink());
+					if (count == (nodes.size() - 1)) {
+						System.out.println("Found User who answered question on the topic "
+								+ answer.getOwner().getUserId() + "->" + singleQuestion.getLink());
 						return answer.getOwner();
 					}
 				}
@@ -85,6 +95,7 @@ public class InputReader {
 
 	/**
 	 * This method reads the Json input file and loads the index.
+	 * 
 	 * @param fileName
 	 * @throws Exception
 	 */
@@ -157,10 +168,7 @@ public class InputReader {
 			}
 		}
 		System.out.println("Map Received-->" + expertUsers);
-		double BEST_ANSWER_WEIGHT = 9;
-		double BEST_ANSWERTAG_WEIGHT = 8;
-		double NORMALIZED_UPVOTE_WEIGHT = 10;
-		double NORMALIZED_DOWNVOTE_WEIGHT = -1;
+
 		for (ExpertUser expertUserEntry : expertUsers.values()) {
 			for (AnswerUserList entry : expertUserEntry.getAnswerUserList()) {
 				// Feature 1 : If Best Answer, import entire

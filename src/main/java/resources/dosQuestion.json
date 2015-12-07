@@ -1,0 +1,4 @@
+{
+	"title": "How can I make an “are you sure” prompt in a DOS batchfile?",
+	"body": "I have a batch file that automates copying a bunch of files from one place to the other and back for me. Only thing is as much as it helps me I keep accidentally selecting that command off my command buffer and mass overwriting uncommited changes. What code would I need for my .bat file to make it say "are you sure", and make me type "y" before it ran the rest of the file? If anything but "y" is typed it should exit execution on that line. Edit Nov 27 Ok I marked this unanswered again because I still can't figure it out. When I call "exit;" it closes cmd.exe which is not what I want. All this because Windows implemented command buffer wrong [differently than what I am used to at least]"
+	}

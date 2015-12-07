@@ -98,34 +98,33 @@ public class IndexAndSearch {
 		FieldType myStringType = new FieldType(TextField.TYPE_NOT_STORED);
 		myStringType.setOmitNorms(false);
 		Set<String> skills = new HashSet<String>();
-		Set<String> topSkills= new HashSet<String>();
-		
+		Set<String> topSkills = new HashSet<String>();
+
 		for (UserExpertise expert : experts.getUserExpertise().values()) {
 
 			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < expert.getWeight()*100; i++) {
+			for (int i = 0; i < expert.getWeight() * 100; i++) {
 				sb.append(expert.getSkill() + " ");
-				
+
 			}
-			skills.add(expert.getSkill()+"["+((expert.getWeight()*100/100))+"]");
+			skills.add(expert.getSkill() + "[" + ((expert.getWeight() * 100 / 100)) + "]");
 			Field field = new Field("skill", sb.toString(), myStringType);
 			// field.setBoost( ((Double)expert.getWeight()).floatValue());
 			doc.add(field);
 		}
-		
+
 		for (UserExpertise expert : experts.getTopSkills().values()) {
 
 			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < expert.getWeight()*100; i++) {
+			for (int i = 0; i < expert.getWeight() * 100; i++) {
 				sb.append(expert.getSkill() + " ");
-				
+
 			}
-			topSkills.add(expert.getSkill()+"["+((expert.getWeight()*100/100))+"]");
+			topSkills.add(expert.getSkill() + "[" + ((expert.getWeight() * 100 / 100)) + "]");
 			Field field = new Field("topSkill", sb.toString(), myStringType);
 			doc.add(field);
 		}
-		
-		
+
 		doc.add(new StringField("skills", skills.toString(), Field.Store.YES));
 		doc.add(new StringField("topSkills", topSkills.toString(), Field.Store.YES));
 		doc.add(new StringField("link", experts.getOwner().getLink(), Field.Store.YES));
@@ -146,52 +145,55 @@ public class IndexAndSearch {
 
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(indexPath));
 		IndexSearcher searcher = new IndexSearcher(reader);
-		
+
 		try {
 			StringBuilder sb = new StringBuilder();
 			for (OntologyNode ontologyNode : skills) {
-				sb.append((sb.toString().length()==0?" ":" OR " )+ ontologyNode.getEntity().toLowerCase());
+				sb.append((sb.toString().length() == 0 ? " " : " OR ") + ontologyNode.getEntity().toLowerCase());
 			}
-			System.out.println("Primary Skill Set identified: " +sb.toString());
-			String queryStr= /*"skill:" + sb.toString() + " OR" (*/"topSkill:" + sb.toString();/*")^50"*/;
+			System.out.println("Primary Skill Set identified: " + sb.toString());
+			String queryStr =  "skill:" + sb.toString() + " OR (topSkill:" + sb.toString()+ ")^50" ;
 			query = new QueryParser("skill", analyzer).parse(queryStr /* "wildfly and rest" */);
-			System.out.println("==>"+query);
+			System.out.println("==>" + query);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		Similarity sim = new DefaultSimilarity() {
-			   @Override
+			@Override
 			public float idf(long docFreq, long numDocs) {
 				// TODO Auto-generated method stub
 				return 1;
 			}
-			  @Override
+
+			@Override
 			public float tf(float freq) {
 				// TODO Auto-generated method stub
-				return  freq;
+				return freq;
 			}
-			   @Override
+
+			@Override
 			public float queryNorm(float sumOfSquaredWeights) {
 				// TODO Auto-generated method stub
 				return 1;
 			}
-			   @Override
+
+			@Override
 			public float coord(int overlap, int maxOverlap) {
 				// TODO Auto-generated method stub
-				return super.coord(overlap, maxOverlap)*100;
+				return super.coord(overlap, maxOverlap) * 100;
 			}
-			};
-			searcher.setSimilarity(sim);
-System.out.println(searcher.getDefaultSimilarity());
-			TopDocs results = searcher.search(query, 5 * hitsPerPage);
-			ScoreDoc[] hits = results.scoreDocs;
+		};
+		searcher.setSimilarity(sim);
+		System.out.println(searcher.getDefaultSimilarity());
+		TopDocs results = searcher.search(query, 5 * hitsPerPage);
+		ScoreDoc[] hits = results.scoreDocs;
 		System.out.println("Found " + hits.length + " hits.");
 		List<String> docs = new LinkedList<String>();
 		for (int i = 0; i < hits.length; ++i) {
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
-			docs.add(d.get("userId") );
-			System.out.println((i + 1) + ". " + d.get("userId")+ "\t"+ d.get("topSkills") + "\t"+ d.get("skills"));
+			docs.add(d.get("userId"));
+			System.out.println((i + 1) + ". " + d.get("userId") + "\t" + d.get("topSkills") + "\t" + d.get("skills"));
 		}
 		reader.close();
 		return docs;
